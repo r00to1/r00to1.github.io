@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="HawSkull" />
+
+
+
+<meta name="description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+
+git addgit add命令将工作目录中的变化添加到缓存区。它告诉Git你想要在下一次提交时包含这个文件的更新。但是，git add不会怎么影响你的仓库——在你运行git commit前更改都不会被记录。
+使用这些命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3_Git之保存你的更改">
+<meta property="og:url" content="http://r00to1.github.io/2015/01/28/3_Git/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+
+git addgit add命令将工作目录中的变化添加到缓存区。它告诉Git你想要在下一次提交时包含这个文件的更新。但是，git add不会怎么影响你的仓库——在你运行git commit前更改都不会被记录。
+使用这些命令">
+<meta property="og:image" content="https://www.atlassian.com/git/images/tutorials/getting-started/saving-changes/01.svg">
+<meta property="og:image" content="https://www.atlassian.com/git/images/tutorials/getting-started/saving-changes/02.svg">
+<meta property="og:updated_time" content="2015-01-29T05:15:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="3_Git之保存你的更改">
+<meta name="twitter:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+
+git addgit add命令将工作目录中的变化添加到缓存区。它告诉Git你想要在下一次提交时包含这个文件的更新。但是，git add不会怎么影响你的仓库——在你运行git commit前更改都不会被记录。
+使用这些命令">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>3_Git之保存你的更改 | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HawSkull</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HawSkull</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HawSkull</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-3_Git" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/28/3_Git/" class="article-date">
+      <time datetime="2015-01-28T05:15:39.000Z" itemprop="datePublished">2015-01-28</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      3_Git之保存你的更改
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <hr>
+<blockquote>
+<p>转载：感谢<a href="https://github.com/geeeeeeeeek" target="_blank" rel="external">童仲毅</a>同学写了该系列文章，我只是搬运工，谢谢!</p>
+<p>这是一篇在<a href="https://www.atlassian.com/git/tutorials/saving-changes" target="_blank" rel="external">原文</a>基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(<a href="http://creativecommons.org/licenses/by/2.5/au/deed.zh" target="_blank" rel="external">CC BY 2.5 AU</a>)协议共享。</p>
+</blockquote>
+<h2 id="git_add">git add</h2><p><code>git add</code>命令将工作目录中的变化添加到缓存区。它告诉Git你想要在下一次提交时包含这个文件的更新。但是，<code>git add</code>不会怎么影响你的仓库——在你运行<code>git commit</code>前更改都不会被记录。</p>
+<p>使用这些命令之时，你还需要<code>git status</code>来查看工作目录和缓存区的状态。</p>
+<h3 id="用法">用法</h3><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">add</span> &lt;<span class="built_in">file</span>&gt;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>将<code>&lt;file&gt;</code>中的更改加入下次提交的缓存。</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">add</span> &lt;<span class="built_in">directory</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>将<code>&lt;directory&gt;</code>下的更改加入下次提交的缓存。</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">git</span> <span class="keyword">add </span>-p</span><br></pre></td></tr></table></figure>
+<p>开始交互式的缓存，你可以选择文件的一部分加入到下次提交缓存。它会向你展示一堆更改，等待你输入一个命令。<code>y</code>将这块更改加入缓存，<code>n</code>忽略这块更改，<code>s</code>将它分割成更小的块，<code>e</code>手动编辑这块更改，以及<code>q</code>退出。</p>
+<h3 id="讨论">讨论</h3><p><code>git add</code>和<code>git commit</code>这两个命令组成了最基本的Git工作流。每一个Git用户都需要理解这两个命令，不管他们团队的协作模型是如何的。我有一千种方式可以将项目版本记录在仓库的历史中。</p>
+<p>在一个只有编辑、缓存、提交这样基本流程的项目上开发。首先，你要在工作目录中编辑你的文件。当你准备备份项目的当前状态时，你通过<code>git add</code>来缓存更改。当你对缓存的快照满意之后，你通过<code>git commit</code>将它提交到你的项目历史中去。</p>
+<p><img src="https://www.atlassian.com/git/images/tutorials/getting-started/saving-changes/01.svg" alt="Git Tutorial: git add Snapshot"></p>
+<p><code>git add</code>命令不能和 <code>svn add</code>混在一起理解，后者将文件添加到仓库中。而<code>git add</code> 发生于更抽象的 <em>更改</em> 层面。也就是说，<code>git add</code>在每次你修改一个文件时都需要被调用，而<code>svn add</code>只需要每个文件调用一次。这听上去很多余，但这样的工作流使得一个项目更容易组织。</p>
+<h4 id="缓存区">缓存区</h4><p>缓存区是Git更为独特的地方之一，如果你是从SVN（甚至是Mercurial）迁移而来，那你可得花点时间理解了。你可以简单地把它想成是工作目录和项目历史之间的缓冲区。</p>
+<p>缓存允许你在实际提交到项目历史之前，将相关的更改组合成一份高度专注的快照，而不是将你上次提交以后产生的所有更改一并提交。也就是说你可以更改各种不相关的文件，然后回过去将它们按逻辑切分，将相关的更改添加到缓存，一份一份提交。在任何修改控制系统中，很重要的一点是提交必须是原子性的，以便于追踪bug，并用最小的代价回滚更改。</p>
+<h3 id="栗子">栗子</h3><p>当你开始新项目的时候，<code>git add</code>和<code>svn import</code>类似。为了创建当前目录的初始提交，使用下面两个命令：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">git</span> <span class="keyword">add </span>.</span><br><span class="line"><span class="label">git</span> commit</span><br></pre></td></tr></table></figure>
+<p>当你项目设置好之后，新的文件可以通过路径传递给<code>git add</code>来添加：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add hello<span class="class">.py</span></span><br><span class="line">git commit</span><br></pre></td></tr></table></figure>
+<p>上面的命令同样可以用于记录已有文件的更改。重复一次，Git不会区分缓存的更改来自新文件，还是仓库中已有的文件。</p>
+<h2 id="git_commit">git commit</h2><p><code>git commit</code>命令将缓存的快照提交到项目历史。提交的快照可以认为是项目『安全』的版本——Git永远不会改变它们，除非你这么要求。和<code>git add</code>一样，这是最重要的Git命令之一。</p>
+<p>尽管和它和<code>svn commit</code>名字一样，但实际上它们毫无关联。快照被提交到本地仓库，不会和其他Git仓库有任何交互。</p>
+<h3 id="用法-1">用法</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">git</span> commit</span><br></pre></td></tr></table></figure>
+<p>提交已经缓存的快照。它会运行文本编辑器，等待你输入提交信息。当你输入信息之后，保存文件，关闭编辑器，创建实际的提交。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="operator"><span class="keyword">commit</span> -<span class="keyword">m</span> <span class="string">"&lt;message&gt;"</span></span></span><br></pre></td></tr></table></figure>
+<p>提交已经缓存的快照。但将<code>&lt;message&gt;</code>作为提交信息，而不是运行文本编辑器。</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -<span class="literal">a</span></span><br></pre></td></tr></table></figure>
+<p>提交一份包含工作目录所有更改的快照。它只包含跟踪过的文件的更改（那些之前已经通过<code>git add</code>添加过的文件）。</p>
+<h3 id="讨论-1">讨论</h3><p>快照总是提交到 <em>本地</em> 仓库。这一点和SVN截然不同，后者的工作拷贝提交到中央仓库。而Git不会强制你和中央仓库进行交互，直到你准备好了。就像缓存区是工作目录和项目历史之间的缓冲地带，每个开发者的本地仓库是他们贡献的代码和中央仓库之间的缓冲地带。</p>
+<p>这一点改变了Git用户基本的开发模型。Git开发者可以在本地仓库中积累一些提交，而不是一发生更改就直接提交到中央仓库。这对于SVN风格的协作有着诸多优点：更容易将功能切分成原子性的提交，让相关的提交组合在一起，发布到中央仓库之前整理好本地的历史。开发者得以在一个隔离的环境中工作，直到他们方便的时候再整合代码。</p>
+<h4 id="记录快照，而不是记录差异">记录快照，而不是记录差异</h4><p>SVN和Git除了使用上存在巨大差异，它们底层的实现同样遵循截然不同的设计哲学。SVN追踪文件的 <em>变化</em> ，而Git的版本控制模型基于 <em>快照</em> 。比如说，一个SVN提交由仓库中原文件相比的差异(diff)组成。而Git在每次提交中记录文件的 <em>完整内容</em> 。</p>
+<p><img src="https://www.atlassian.com/git/images/tutorials/getting-started/saving-changes/02.svg" alt="Git Tutorial: Snapshots, Not Differences"></p>
+<p>这让很多Git操作比SVN来的快得多，因为文件的某个版本不需要通过版本间的差异组装得到——每个文件完整的修改能立刻从Git 的内部数据库中得到。</p>
+<p>Git的快照模型对它版本控制模型的方方面面都有着深远的影响，从分支到合并工具，再到协作工作流，以至于影响了所有特性。</p>
+<h3 id="栗子-1">栗子</h3><p>下面这个栗子假设你编辑了<code>hello.py</code>文件的一些内容，并且准备好将它提交到项目历史。首先，你需要用<code>git add</code>缓存文件，然后提交缓存的快照。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add hello<span class="class">.py</span></span><br><span class="line">git commit</span><br></pre></td></tr></table></figure>
+<p>它会打开一个文件编辑器（可以通过<code>git config</code>设置) 询问提交信息，同时列出将被提交的文件。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Please enter the <span class="operator"><span class="keyword">commit</span> message <span class="keyword">for</span> your changes. <span class="keyword">Lines</span> <span class="keyword">starting</span></span><br><span class="line"># <span class="keyword">with</span> <span class="string">'#'</span> will be ignored, <span class="keyword">and</span> an <span class="keyword">empty</span> message aborts the <span class="keyword">commit</span>.</span><br><span class="line"># <span class="keyword">On</span> branch <span class="keyword">master</span></span><br><span class="line"># Changes <span class="keyword">to</span> be committed:</span><br><span class="line"># (<span class="keyword">use</span> <span class="string">"git reset HEAD &lt;file&gt;..."</span> <span class="keyword">to</span> unstage)</span><br><span class="line">#</span><br><span class="line">#modified: hello.py</span></span><br></pre></td></tr></table></figure>
+<p>Git对提交信息没有特定的格式限制，但约定俗成的格式是：在第一行用50个以内的字符总结这个提交，留一空行，然后详细阐述具体的更改。比如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">Change</span> the message displayed <span class="keyword">by</span> hello.py</span><br><span class="line"></span><br><span class="line">- <span class="keyword">Update</span> the sayHello() <span class="keyword">function</span> <span class="keyword">to</span> <span class="keyword">output</span> the <span class="keyword">user</span><span class="string">'s name</span><br><span class="line">- Change the sayGoodbye() function to a friendlier message</span></span></span><br></pre></td></tr></table></figure>
+<p>注意，很多开发者倾向于在提交信息中使用一般现在时态。这样看起来更像是对仓库进行的操作，让很多改写历史的操作更加符合直觉。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HawSkull</a></p>
+        <p><span>发布时间:</span>2015-01-28, 13:15:39</p>
+        <p><span>最后更新:</span>2015-01-29, 13:15:39</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2015/01/28/3_Git/" title="3_Git之保存你的更改">http://r00to1.github.io/2015/01/28/3_Git/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2015/01/28/3_Git/　　作者: HawSkull" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2015/01/29/2_Git/">
+                    2_Git之创建代码仓库
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2015/01/27/4_Git/">
+                    4_Git之检查仓库状态
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#git_add"><span class="toc-number">1.</span> <span class="toc-text">git add</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#用法"><span class="toc-number">1.1.</span> <span class="toc-text">用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#讨论"><span class="toc-number">1.2.</span> <span class="toc-text">讨论</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#缓存区"><span class="toc-number">1.2.1.</span> <span class="toc-text">缓存区</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#栗子"><span class="toc-number">1.3.</span> <span class="toc-text">栗子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git_commit"><span class="toc-number">2.</span> <span class="toc-text">git commit</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#用法-1"><span class="toc-number">2.1.</span> <span class="toc-text">用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#讨论-1"><span class="toc-number">2.2.</span> <span class="toc-text">讨论</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#记录快照，而不是记录差异"><span class="toc-number">2.2.1.</span> <span class="toc-text">记录快照，而不是记录差异</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#栗子-1"><span class="toc-number">2.3.</span> <span class="toc-text">栗子</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"3_Git之保存你的更改　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2015/01/28/3_Git/" data-title="3_Git之保存你的更改" data-url="http://r00to1.github.io/2015/01/28/3_Git/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2015/01/29/2_Git/" title="上一篇: 2_Git之创建代码仓库">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2015/01/27/4_Git/" title="下一篇: 4_Git之检查仓库状态">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2017 HawSkull
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>

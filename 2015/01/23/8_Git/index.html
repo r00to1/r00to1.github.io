@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="HawSkull" />
+
+
+
+<meta name="description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+
+每一个版本控制系统的出现都是为了让你记录代码的变化。你可以看到项目的历史记录——谁贡献了什么、bug是什么时候引入的，还可以撤回有问题的更改。但是，首先你得知道如何来使用它。这也就是为什么会有git log 这个命令。
+到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="8_Git之Git-log高级用法">
+<meta property="og:url" content="http://r00to1.github.io/2015/01/23/8_Git/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+
+每一个版本控制系统的出现都是为了让你记录代码的变化。你可以看到项目的历史记录——谁贡献了什么、bug是什么时候引入的，还可以撤回有问题的更改。但是，首先你得知道如何来使用它。这也就是为什么会有git log 这个命令。
+到">
+<meta property="og:image" content="https://www.atlassian.com/git/images/tutorials/advanced/git-log/01.svg">
+<meta property="og:updated_time" content="2015-01-29T05:15:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="8_Git之Git-log高级用法">
+<meta name="twitter:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+
+每一个版本控制系统的出现都是为了让你记录代码的变化。你可以看到项目的历史记录——谁贡献了什么、bug是什么时候引入的，还可以撤回有问题的更改。但是，首先你得知道如何来使用它。这也就是为什么会有git log 这个命令。
+到">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>8_Git之Git-log高级用法 | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HawSkull</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HawSkull</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HawSkull</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-8_Git" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/23/8_Git/" class="article-date">
+      <time datetime="2015-01-23T05:15:39.000Z" itemprop="datePublished">2015-01-23</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      8_Git之Git-log高级用法
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <hr>
+<blockquote>
+<p>转载：感谢<a href="https://github.com/geeeeeeeeek" target="_blank" rel="external">童仲毅</a>同学写了该系列文章，我只是搬运工，谢谢!</p>
+<p>这是一篇在<a href="https://www.atlassian.com/git/tutorials/git-log" target="_blank" rel="external">原文</a>基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(<a href="http://creativecommons.org/licenses/by/2.5/au/deed.zh" target="_blank" rel="external">CC BY 2.5 AU</a>)协议共享。</p>
+</blockquote>
+<p>每一个版本控制系统的出现都是为了让你记录代码的变化。你可以看到项目的历史记录——谁贡献了什么、bug是什么时候引入的，还可以撤回有问题的更改。但是，首先你得知道如何来使用它。这也就是为什么会有<code>git log</code> 这个命令。</p>
+<p>到现在为止，你应该已经知道如何用<code>git log</code> 命令来显示最基本的提交信息。但除此之外，你还可以传入各种不同的参数来获得不一样的输出。</p>
+<p><code>git log</code> 有两个高级用法：一是自定义commit的输出格式，二是过滤哪些commit要输出。这两个用法合二为一，你就可以找到你项目中你需要的任何信息。</p>
+<h2 id="格式化Log输出">格式化Log输出</h2><p>首先，这篇文章会展示几种<code>git log</code> 格式化输出的例子。大多数例子只是通过标记来向<code>git log</code> 请求或多或少的信息。</p>
+<p>如果你不喜欢默认的<code>git log</code> 格式，你可以用<code>git config</code> 的别名功能来给你想要的格式创建一个快捷方式。<br><a id="more"></a></p>
+<h3 id="Oneline">Oneline</h3><p><code>--oneline</code> 标记把每一个commit压缩到了一行中。它默认只显示commit ID和commit信息的第一行。一般来说，<code>git log --oneline</code> 的输出是这样的：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>e25143 Merge branch <span class="string">'feature'</span></span><br><span class="line">ad8621a Fix <span class="tag">a</span> bug <span class="keyword">in</span> the feature</span><br><span class="line"><span class="number">16</span>b36c6 Add <span class="tag">a</span> new feature</span><br><span class="line"><span class="number">23</span>ad9ad Add the <span class="attribute">initial</span> <span class="tag">code</span> base</span><br></pre></td></tr></table></figure>
+<p>它对于获得你项目的大致情况很有帮助。</p>
+<h3 id="Decorate">Decorate</h3><p>很多时候，知道每个commit关联的分支或者标签很有用。<code>--decorate</code> 标记让<code>git log</code> 显示指向这个commit的所有引用（比如说分支、标签等）。</p>
+<p>这可以和另一个配置项一起使用。比如，执行<code>git log --oneline --decorate</code> 会将commit历史格式化成这样：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>e25143 (HEAD, master) Merge branch <span class="string">'feature'</span></span><br><span class="line">ad8621a (feature) Fix <span class="tag">a</span> bug <span class="keyword">in</span> the feature</span><br><span class="line"><span class="number">16</span>b36c6 Add <span class="tag">a</span> new feature</span><br><span class="line"><span class="number">23</span>ad9ad (tag: v0.<span class="number">9</span>) Add the <span class="attribute">initial</span> <span class="tag">code</span> base</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，你可以看到最上面那个commit已经被checkout了（通过HEAD标记），而且它还是master分支的尾端。第二个commit有另一个feature分支指向它，以及最后那个commit带有v0.9标签。</p>
+<p>分支、标签、HEAD还有commit历史是你Git仓库中包含的所有信息。因此，这个命令让你更完整地观察项目结构。</p>
+<h3 id="Diff">Diff</h3><p><code>git log</code> 提供了很多选项来显示两个commit之间的差异。其中最常用的两个是<code>--stat</code> 和<code>-p</code>。</p>
+<p><code>--stat</code> 选项显示每次commit的文件增删数量（注意修改一行记作增加一行且删去一行），当你想要查看commit引入的变化时这会非常有用。比如说，下面这个commit在hello.py文件中增加了67行，删去了38行。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">commit f2a238924e89ca1d4947662928218a06d39068c3</span><br><span class="line">Author: John &lt;john@example.com&gt;</span><br><span class="line">Date:   Fri Jun <span class="number">25</span> <span class="number">17</span>:<span class="number">30</span>:<span class="number">28</span> <span class="number">2014</span> -<span class="number">0500</span></span><br><span class="line"></span><br><span class="line">    Add a <span class="keyword">new</span> feature</span><br><span class="line"></span><br><span class="line"> hello.py | <span class="number">105</span> ++++++++++++++++++++++++-----------------</span><br><span class="line"> <span class="number">1</span> file changed, <span class="number">67</span> insertion(+), <span class="number">38</span> deletions(-)</span><br></pre></td></tr></table></figure>
+<p>文件名后面+和-的数量是这个commit造成的更改中增删的相对比例。它给你一个直观的感觉，关于这次commit有多少改动。如果你想知道每次commit删改的绝对数量，你可以将<code>-p</code> 选项传入<code>git log</code> 。这样commit所有的删改都会被输出：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">commit <span class="number">16</span>b36c697eb2d24302f89aa22d9170dfe609855b</span><br><span class="line">Author: Mary &lt;mary@example.com&gt;</span><br><span class="line">Date:   Fri Jun <span class="number">25</span> <span class="number">17</span>:<span class="number">31</span>:<span class="number">57</span> <span class="number">2014</span> -<span class="number">0500</span></span><br><span class="line"></span><br><span class="line">    Fix <span class="tag">a</span> bug <span class="keyword">in</span> the feature</span><br><span class="line"></span><br><span class="line">diff --git a/hello<span class="class">.py</span> b/hello<span class="class">.py</span></span><br><span class="line">index <span class="number">18</span>ca709.<span class="class">.c673b40</span> <span class="number">100644</span></span><br><span class="line">--- a/hello<span class="class">.py</span></span><br><span class="line">+++ b/hello<span class="class">.py</span></span><br><span class="line">@@ -<span class="number">13</span>,<span class="number">14</span> +<span class="number">13</span>,<span class="number">14</span> @@ B</span><br><span class="line">-<span class="function"><span class="title">print</span><span class="params">(<span class="string">"Hello, World!"</span>)</span></span></span><br><span class="line">+<span class="function"><span class="title">print</span><span class="params">(<span class="string">"Hello, Git!"</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>对于改动很多的commit来说，这个输出会变得又长又大。一般来说，当你输出所有删改的时候，你应该是想要查找某一具体的改动，这时你就要用到<code>pickaxe</code> 选项。</p>
+<h3 id="Shortlog">Shortlog</h3><p><code>git shortlog</code> 是一种特别的<code>git log</code> ，它是为创建发布声明设计的。它把每个commit按作者分类，显示commit信息的第一行。这样可以容易地看到谁做了什么。</p>
+<p>比如说，两个开发者为项目贡献了5个commit，那么<code>git shortlog</code> 输出会是这样的：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Mary (<span class="number">2</span>):</span><br><span class="line">      Fix <span class="tag">a</span> bug <span class="keyword">in</span> the feature</span><br><span class="line">      Fix <span class="tag">a</span> serious security hole <span class="keyword">in</span> our framework</span><br><span class="line"></span><br><span class="line">John (<span class="number">3</span>):</span><br><span class="line">      Add the <span class="attribute">initial</span> <span class="tag">code</span> base</span><br><span class="line">      Add <span class="tag">a</span> new feature</span><br><span class="line">      Merge branch <span class="string">'feature'</span></span><br></pre></td></tr></table></figure>
+<p>默认情况下，<code>git shortlog</code> 把输出按作者名字排序，但你可以传入<code>-n</code> 选项来按每个作者commit数量排序。</p>
+<h3 id="Graph">Graph</h3><p><code>--graph</code> 选项绘制一个ASCII图像来展示commit历史的分支结构。它经常和 <code>--oneline</code> 和 <code>--decorate</code> 两个命令一起使用，这样会更容易查看哪个commit属于哪个分支：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> <span class="comment">--graph --oneline --decorate</span></span><br><span class="line">For <span class="operator">a</span> simple repository <span class="operator">with</span> just <span class="number">2</span> branches, this will produce <span class="operator">the</span> following:</span><br><span class="line"></span><br><span class="line">*   <span class="number">0e25143</span> (HEAD, master) Merge branch <span class="string">'feature'</span></span><br><span class="line">|\  </span><br><span class="line">| * <span class="number">16</span>b36c6 Fix <span class="operator">a</span> bug <span class="operator">in</span> <span class="operator">the</span> <span class="built_in">new</span> feature</span><br><span class="line">| * <span class="number">23</span>ad9ad Start <span class="operator">a</span> <span class="built_in">new</span> feature</span><br><span class="line">* | ad8621a Fix <span class="operator">a</span> critical security issue</span><br><span class="line">|/  </span><br><span class="line">* <span class="number">400e4</span>b7 Fix typos <span class="operator">in</span> <span class="operator">the</span> documentation</span><br><span class="line">* <span class="number">160e224</span> Add <span class="operator">the</span> initial code base</span><br></pre></td></tr></table></figure>
+<p>星号表明这个commit所在的分支，所以上面这个图的意思是<code>23ad9ad</code> 和<code>16b36c6</code> 这两个commit在topic分之上，其余的在master分支上。</p>
+<p>虽然这对简单的项目来说是个很好用的选择，但你可能会更喜欢gitk或SourceTree这些更强大的可视化工具来分析大型项目。</p>
+<h3 id="自定义格式">自定义格式</h3><p>对于其他的<code>git log</code> 格式需求，你都可以使用<code>--pretty=format:&quot;&lt;string&gt;&quot;</code> 选项。它允许你使用像printf一样的占位符来输出commit。</p>
+<p>比如，下面命令中的<code>%cn</code>、<code>%h</code> 和<code>%cd</code> 这三种占位符会被分别替换为作者名字、缩略标识和提交日期。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --pretty=format:<span class="string">"%cn committed %h on %cd"</span></span><br><span class="line">This results in the following format <span class="keyword">for</span> each commit:</span><br><span class="line"></span><br><span class="line">John committed <span class="number">400e4</span>b7 on Fri Jun <span class="number">24</span> <span class="number">12</span>:<span class="number">30</span>:<span class="number">04</span> <span class="number">2014</span> -<span class="number">0500</span></span><br><span class="line">John committed <span class="number">89</span>ab2cf on Thu Jun <span class="number">23</span> <span class="number">17</span>:<span class="number">09</span>:<span class="number">42</span> <span class="number">2014</span> -<span class="number">0500</span></span><br><span class="line">Mary committed <span class="number">180e223</span> on Wed Jun <span class="number">22</span> <span class="number">17</span>:<span class="number">21</span>:<span class="number">19</span> <span class="number">2014</span> -<span class="number">0500</span></span><br><span class="line">John committed f12ca28 on Wed Jun <span class="number">22</span> <span class="number">13</span>:<span class="number">50</span>:<span class="number">31</span> <span class="number">2014</span> -<span class="number">0500</span></span><br></pre></td></tr></table></figure>
+<p>完整的占位符清单可以在文档中找到。</p>
+<p>除了让你只看到关注的信息，这个<code>--pretty=format:&quot;&lt;string&gt;&quot;</code> 选项在你想要在另一个命令中使用日志内容是尤为有用的。</p>
+<h2 id="过滤提交历史">过滤提交历史</h2><p>格式化commit输出只是<code>git log</code> 其中的一个用途。另一半是理解如何浏览整个提交历史。接下来的文章会介绍如何用<code>git log</code> 选择项目历史中的特定的commit。所有的用法都可以和上面讨论过的格式化选项结合起来。</p>
+<h3 id="按数量">按数量</h3><p><code>git log</code> 最基础的过滤选项是限制显示的commit数量。当你只对最近几次commit感兴趣时，它可以节省你一页一页查看的时间。</p>
+<p>你可以在后面加上<code>-&lt;n&gt;</code>选项。比如说，下面这个命令会显示最新的3次commit：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> -<span class="number">3</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="按日期">按日期</h3><p>如果你想要查看某一特定时间段内的commit，你可以使用<code>--after</code> 或 <code>--before</code> 标记来按日期筛选。它们都接受好几种日期格式作为参数。比如说，下面的命令会显示2014年7月1日后（含）的commit：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--after="2014-7-1"</span></span><br></pre></td></tr></table></figure>
+<p>你也可以传入相对的日期，比如一周前（”<code>1 week ago</code>“）或者昨天（”<code>yesterday</code>“）：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">get</span> <span class="command">log</span> <span class="comment">--after="yesterday"</span></span><br></pre></td></tr></table></figure>
+<p>你可以同时提供<code>--before</code> 和 <code>--after</code> 来检索两个日期之间的commit。比如，为了显示2014年7月1日到2014年7月4日之间的commit，你可以这么写：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --after=<span class="string">"2014-7-1"</span> --before=<span class="string">"2014-7-4"</span></span><br></pre></td></tr></table></figure>
+<p>注意<code>--since</code> 、<code>--until</code> 标记和<code>--after</code> 、<code>--before</code> 标记分别是等价的。</p>
+<h3 id="按作者">按作者</h3><p>当你只想看某一特定作者的commit的时候，你可以使用<code>--author</code> 标记。它接受正则表达式，返回所有作者名字满足这个规则的commit。如果你知道那个作者的确切名字你可以直接传入文本字符串：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--author="John"</span></span><br></pre></td></tr></table></figure>
+<p>它会显示所有作者叫John的commit。作者名不一定是全匹配，只要包含那个子串就会匹配。</p>
+<p>你也可以用正则表达式来创建更复杂的检索。比如，下面这个命令检索名叫Mary或John的作者的commit。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--author="John\|Mary"</span></span><br></pre></td></tr></table></figure>
+<p>注意作者的邮箱地址也算作是作者的名字，所以你也可以用这个选项来按邮箱检索。</p>
+<p>如果你的工作流区分提交者和作者，<code>--committer</code> 也能以相同的方式使用。</p>
+<h3 id="按提交信息">按提交信息</h3><p>按提交信息来过滤commit，你可以使用<code>--grep</code> 标记。它和上面的<code>--author</code> 标记差不多，只不过它搜索的是提交信息而不是作者。</p>
+<p>比如说，你的团队规范要求在提交信息中包括相关的issue编号，你可以用下面这个命令来显示这个issue相关的所有commit：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">log</span> --<span class="keyword">grep</span>=<span class="string">"JRA-224:"</span></span><br></pre></td></tr></table></figure>
+<p>你也可以传入<code>-i</code> 参数来忽略大小写匹配。</p>
+<h3 id="按文件">按文件</h3><p>很多时候，你只对某个特定文件的更改感兴趣。为了显示某个特定文件的历史，你只需要传入文件路径。比如说，下面这个命令返回所有和<code>foo.py</code> 和<code>bar.py</code> 文件相关的commit：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> -- foo.<span class="keyword">py</span> bar.<span class="keyword">py</span></span><br></pre></td></tr></table></figure>
+<p><code>--</code> 告诉<code>git log</code> 接下来的参数是文件路径而不是分支名。如果分支名和文件名不可能冲突，你可以省略<code>--</code>。</p>
+<h3 id="按内容">按内容</h3><p>我们还可以根据源代码中某一行的增加和删除来搜索commit。这被称为pickaxe，它接受形如<code>-S&quot;&lt;string&gt;&quot;</code> 的参数。比如说，当你想要知道<code>Hello, World!</code> 字符串是什么时候加到项目中哪个文件中去的，你可以使用下面这个命令：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> -S <span class="string">"Hello, World!"</span></span><br></pre></td></tr></table></figure>
+<p>如果你想用正则表达式而不是字符串来搜索，你可以使用<code>-G&quot;&lt;regex&gt;&quot;</code> 标记。</p>
+<p>这是一个非常强大的调试工具，它能让你定位到所有影响代码中特定一行的commit。它甚至可以让你看到某一行是什么时候复制或者移动到另一个文件中去的。</p>
+<h3 id="按范围">按范围</h3><p>你可以传入范围来筛选commit。这个范围由下面这样的格式指定，其中&lt; since &gt; 和&lt; until &gt;是commit的引用：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> &lt;<span class="keyword">since</span>&gt;..&lt;<span class="keyword">until</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>这个命令在你使用分支引用作为参数时特别有用。这是一个显示两个分支之间区别最简单的方式。看看下面这个命令：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> master..feature</span><br></pre></td></tr></table></figure>
+<p>其中的master..feature范围包含了在feature分支而不在feature分支中所有的commit。换句话说，这个命令可以看出从master分支Fork到feature分支后发生了哪些变化。它可以这样可视化：</p>
+<p><img src="https://www.atlassian.com/git/images/tutorials/advanced/git-log/01.svg" alt="enter image description here"></p>
+<p>注意如果你更改范围的前后顺序(feature..master)，你会获取到master分支而非feature分支上的所有commit。如果<code>git log</code> 输出了全部两个分支的commit，这说明你的提交历史已经分叉了。</p>
+<h3 id="过滤出merge_commit">过滤出merge commit</h3><p><code>git log</code> 输出时默认包括merge commit。但是，如果你的团队采用强制合并策略（意思是merge上游修改你的分支而不是将你的分支rebase到上游分支），你的项目历史中会有很多外来的commit。</p>
+<p>你可以通过<code>--no-merges</code> 标记来排除这些commit：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--no-merges</span></span><br></pre></td></tr></table></figure>
+<p>另一方面，如果你只对merge commit感兴趣，你可以使用<code>--merges</code> 标记：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--merges</span></span><br></pre></td></tr></table></figure>
+<p>它会返回所有有两个父节点的commit。</p>
+<h2 id="总结">总结</h2><p>你现在应该对使用<code>git log</code> 来格式化输出和选择你要显示的commit的用法比较熟悉了。它允许你查看你项目历史中任何需要的内容。</p>
+<p>这些技巧是你Git工具箱中重要的部分，不过注意<code>git log</code> 往往和其他Git命令连着使用。当你找到了你要的commit，你把它传给<code>git checkout</code> 、<code>git revert</code>  或是其他控制你提交历史的工具。所以，请继续坚持Git高级用法的学习。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HawSkull</a></p>
+        <p><span>发布时间:</span>2015-01-23, 13:15:39</p>
+        <p><span>最后更新:</span>2015-01-29, 13:15:39</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2015/01/23/8_Git/" title="8_Git之Git-log高级用法">http://r00to1.github.io/2015/01/23/8_Git/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2015/01/23/8_Git/　　作者: HawSkull" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2015/01/24/7_Git/">
+                    7_Git之代码回滚：Reset、Checkout、Revert的选择
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2015/01/22/9_Git/">
+                    9_Git之Git钩子：自定义你的工作流
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#格式化Log输出"><span class="toc-number">1.</span> <span class="toc-text">格式化Log输出</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Oneline"><span class="toc-number">1.1.</span> <span class="toc-text">Oneline</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Decorate"><span class="toc-number">1.2.</span> <span class="toc-text">Decorate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Diff"><span class="toc-number">1.3.</span> <span class="toc-text">Diff</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shortlog"><span class="toc-number">1.4.</span> <span class="toc-text">Shortlog</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Graph"><span class="toc-number">1.5.</span> <span class="toc-text">Graph</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义格式"><span class="toc-number">1.6.</span> <span class="toc-text">自定义格式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#过滤提交历史"><span class="toc-number">2.</span> <span class="toc-text">过滤提交历史</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#按数量"><span class="toc-number">2.1.</span> <span class="toc-text">按数量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按日期"><span class="toc-number">2.2.</span> <span class="toc-text">按日期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按作者"><span class="toc-number">2.3.</span> <span class="toc-text">按作者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按提交信息"><span class="toc-number">2.4.</span> <span class="toc-text">按提交信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按文件"><span class="toc-number">2.5.</span> <span class="toc-text">按文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按内容"><span class="toc-number">2.6.</span> <span class="toc-text">按内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按范围"><span class="toc-number">2.7.</span> <span class="toc-text">按范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#过滤出merge_commit"><span class="toc-number">2.8.</span> <span class="toc-text">过滤出merge commit</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"8_Git之Git-log高级用法　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2015/01/23/8_Git/" data-title="8_Git之Git-log高级用法" data-url="http://r00to1.github.io/2015/01/23/8_Git/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2015/01/24/7_Git/" title="上一篇: 7_Git之代码回滚：Reset、Checkout、Revert的选择">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2015/01/22/9_Git/" title="下一篇: 9_Git之Git钩子：自定义你的工作流">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2017 HawSkull
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>

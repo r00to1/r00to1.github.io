@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="HawSkull" />
+
+
+
+<meta name="description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的文章。原作者Mark Lodato，译者wych。原文采用创用CC 姓名标示-非商业性-相同方式分享3.0 美国授权条款授权。
+
+此页图解git中的最常用命令。如果你稍微理解git的工作原理，这篇文章能够让你理解的更透彻。
+基本用法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5_Git之图解Git命令">
+<meta property="og:url" content="http://r00to1.github.io/2015/01/26/5_Git/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的文章。原作者Mark Lodato，译者wych。原文采用创用CC 姓名标示-非商业性-相同方式分享3.0 美国授权条款授权。
+
+此页图解git中的最常用命令。如果你稍微理解git的工作原理，这篇文章能够让你理解的更透彻。
+基本用法">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/basic-usage.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/basic-usage-2.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/conventions.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/diff.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/commit-master.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/commit-maint.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/commit-amend.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/checkout-files.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/checkout-branch.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/checkout-detached.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/commit-detached.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/checkout-after-detached.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/checkout-b-detached.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/reset-commit.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/reset.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/reset-files.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/merge-ff.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/merge.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/cherry-pick.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/rebase.svg">
+<meta property="og:image" content="http://marklodato.github.io/visual-git-guide/rebase-onto.svg">
+<meta property="og:updated_time" content="2015-01-29T05:15:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="5_Git之图解Git命令">
+<meta name="twitter:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+这是一篇在原文基础上演绎的文章。原作者Mark Lodato，译者wych。原文采用创用CC 姓名标示-非商业性-相同方式分享3.0 美国授权条款授权。
+
+此页图解git中的最常用命令。如果你稍微理解git的工作原理，这篇文章能够让你理解的更透彻。
+基本用法">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>5_Git之图解Git命令 | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HawSkull</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HawSkull</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HawSkull</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-5_Git" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/26/5_Git/" class="article-date">
+      <time datetime="2015-01-26T05:15:39.000Z" itemprop="datePublished">2015-01-26</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      5_Git之图解Git命令
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <hr>
+<blockquote>
+<p>转载：感谢<a href="https://github.com/geeeeeeeeek" target="_blank" rel="external">童仲毅</a>同学写了该系列文章，我只是搬运工，谢谢!</p>
+<p>这是一篇在<a href="http://marklodato.github.io/visual-git-guide/index-zh-cn.html" target="_blank" rel="external">原文</a>基础上演绎的文章。原作者<a href="lodatom@gmail.com">Mark Lodato</a>，译者<a href="ellrywych@gmail.com">wych</a>。原文采用<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/us/" target="_blank" rel="external">创用CC 姓名标示-非商业性-相同方式分享3.0 美国授权条款</a>授权。</p>
+</blockquote>
+<p>此页图解git中的最常用命令。如果你稍微理解git的工作原理，这篇文章能够让你理解的更透彻。</p>
+<h2 id="基本用法">基本用法</h2><p><img src="http://marklodato.github.io/visual-git-guide/basic-usage.svg" alt="enter image description here"><br><a id="more"></a></p>
+<p>上面的四条命令在工作目录、stage缓存(也叫做索引)和commit历史之间复制文件。</p>
+<ul>
+<li><code>git add files</code> 把工作目录中的文件加入stage缓存</li>
+<li><code>git commit</code> 把stage缓存生成一次commit，并加入commit历史</li>
+<li><code>git reset -- files</code> 撤销最后一次<code>git add files</code>，你也可以用<code>git reset</code> 撤销所有stage缓存文件</li>
+<li><code>git checkout -- files</code> 把文件从stage缓存复制到工作目录，用来丢弃本地修改</li>
+</ul>
+<p>你可以用 <code>git reset -p</code>、<code>git checkout -p</code> 或 <code>git add -p</code>进入交互模式，也可以跳过stage缓存直接从commit历史取出文件或者直接提交代码。<br><img src="http://marklodato.github.io/visual-git-guide/basic-usage-2.svg" alt="enter image description here"></p>
+<ul>
+<li><code>git commit -a</code> 相当于运行<code>git add</code>把所有当前目录下的文件加入stage缓存再运行<code>git commit</code>。</li>
+<li><code>git commit files</code> 进行一次包含最后一次提交加上工作目录中文件快照的提交，并且文件被添加到stage缓存。</li>
+<li><code>git checkout HEAD -- files</code> 回滚到复制最后一次提交。</li>
+</ul>
+<h2 id="约定">约定</h2><p>后文中以下面的形式使用图片：<br><img src="http://marklodato.github.io/visual-git-guide/conventions.svg" alt="enter image description here"><br>绿色的5位字符表示提交的ID，分别指向父节点。分支用橙色显示，分别指向特定的提交。当前分支由附在其上的<em>HEAD</em>标识。</p>
+<p>这张图片里显示最后5次提交，<em>ed489</em>是最新提交。 <em>master</em>分支指向此次提交，另一个<em>maint</em>分支指向祖父提交节点。</p>
+<h2 id="命令详解">命令详解</h2><h3 id="Diff">Diff</h3><p>有许多种方法查看两次提交之间的变动，下面是其中一些例子。<br><img src="http://marklodato.github.io/visual-git-guide/diff.svg" alt="enter image description here"></p>
+<h3 id="Commit">Commit</h3><p>提交时，git用stage缓存中的文件创建一个新的提交，并把此时的节点设为父节点。然后把当前分支指向新的提交节点。下图中，当前分支是<em>master</em>。</p>
+<p>在运行命令之前，<em>master</em>指向<em>ed489</em>，提交后，<em>master</em>指向新的节点<em>f0cec</em>并以<em>ed489</em>作为父节点。<br><img src="http://marklodato.github.io/visual-git-guide/commit-master.svg" alt="enter image description here"><br>即便当前分支是某次提交的祖父节点，git会同样操作。下图中，在<em>master</em>分支的祖父节点<em>maint</em>分支进行一次提交，生成了<em>1800b</em>。</p>
+<p>这样，<em>maint</em>分支就不再是<em>master</em>分支的祖父节点。此时，<a href="#merge">merge</a> 或者 <a href="#rebase">rebase</a> 是必须的。<br><img src="http://marklodato.github.io/visual-git-guide/commit-maint.svg" alt="enter image description here"><br>如果想更改一次提交，使用  <code>git commit --amend</code>。git会使用与当前提交相同的父节点进行一次新提交，旧的提交会被取消。<br><img src="http://marklodato.github.io/visual-git-guide/commit-amend.svg" alt="enter image description here"><br>另一个例子是<a href="#detached">分离HEAD提交</a>，在后面的章节中介绍。</p>
+<h3 id="Checkout">Checkout</h3><p>checkout命令用于从历史提交（或者stage缓存）中拷贝文件到工作目录，也可用于切换分支。</p>
+<p>当给定某个文件名（或者打开-p选项，或者文件名和-p选项同时打开）时，git会从指定的提交中拷贝文件到stage缓存和工作目录。比如，<code>git checkout HEAD~ foo.c</code>会将提交节点<em>HEAD~</em>（即当前提交节点的父节点）中的<code>foo.c</code>复制到工作目录并且加到stage缓存中。如果命令中没有指定提交节点，则会从stage缓存中拷贝内容。注意当前分支不会发生变化。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-files.svg" alt="enter image description here"><br>当不指定文件名，而是给出一个（本地）分支时，那么<em>HEAD</em>标识会移动到那个分支（也就是说，我们“切换”到那个分支了），然后stage缓存和工作目录中的内容会和<em>HEAD</em>对应的提交节点一致。新提交节点（下图中的a47c3）中的所有文件都会被复制（到stage缓存和工作目录中）；只存在于老的提交节点（ed489）中的文件会被删除；不属于上述两者的文件会被忽略，不受影响。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-branch.svg" alt="enter image description here"><br>如果既没有指定文件名，也没有指定分支名，而是一个标签、远程分支、SHA-1值或者是像<em>master~3</em>类似的东西，就得到一个匿名分支，称作<em>detached HEAD</em>（被分离的<em>HEAD</em>标识）。这样可以很方便地在历史版本之间互相切换。比如说你想要编译1.6.6.1版本的git，你可以运行<code>git checkout v1.6.6.1</code>（这是一个标签，而非分支名），编译，安装，然后切换回另一个分支，比如说<code>git checkout master</code>。然而，当提交操作涉及到“分离的HEAD”时，其行为会略有不同，详情见在<a href="#detached">下面</a>。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-detached.svg" alt="enter image description here"></p>
+<h3 id="HEAD标识处于分离状态时的提交操作">HEAD标识处于分离状态时的提交操作</h3><p>当<em>HEAD</em>处于分离状态（不依附于任一分支）时，提交操作可以正常进行，但是不会更新任何已命名的分支。你可以认为这是在更新一个匿名分支。<br><img src="http://marklodato.github.io/visual-git-guide/commit-detached.svg" alt="enter image description here"><br>一旦此后你切换到别的分支，比如说<em>master</em>，那么这个提交节点（可能）再也不会被引用到，然后就会被丢弃掉了。注意这个命令之后就不会有东西引用<em>2eecb</em>。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-after-detached.svg" alt="enter image description here"><br>但是，如果你想保存这个状态，可以用命令<code>git checkout -b name</code>来创建一个新的分支。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-b-detached.svg" alt="enter image description here"></p>
+<h3 id="Reset">Reset</h3><p>reset命令把当前分支指向另一个位置，并且有选择的变动工作目录和索引。也用来在从历史commit历史中复制文件到索引，而不动工作目录。</p>
+<p>如果不给选项，那么当前分支指向到那个提交。如果用<code>--hard</code>选项，那么工作目录也更新，如果用<code>--soft</code>选项，那么都不变。<br><img src="http://marklodato.github.io/visual-git-guide/reset-commit.svg" alt="enter image description here"><br>如果没有给出提交点的版本号，那么默认用<em>HEAD</em>。这样，分支指向不变，但是索引会回滚到最后一次提交，如果用<code>--hard</code>选项，工作目录也同样。<br><img src="http://marklodato.github.io/visual-git-guide/reset.svg" alt="enter image description here"><br>如果给了文件名(或者 <code>-p</code>选项), 那么工作效果和带文件名的<a href="#checkout">checkout</a>差不多，除了索引被更新。<br><img src="http://marklodato.github.io/visual-git-guide/reset-files.svg" alt="enter image description here"></p>
+<h3 id="Merge">Merge</h3><p>merge 命令把不同分支合并起来。合并前，索引必须和当前提交相同。如果另一个分支是当前提交的祖父节点，那么合并命令将什么也不做。</p>
+<p>另一种情况是如果当前提交是另一个分支的祖父节点，就导致<em>fast-forward</em>合并。指向只是简单的移动，并生成一个新的提交。<br><img src="http://marklodato.github.io/visual-git-guide/merge-ff.svg" alt="enter image description here"><br>否则就是一次真正的合并。默认把当前提交(<em>ed489</em> 如下所示)和另一个提交(<em>33104</em>)以及他们的共同祖父节点(<em>b325c</em>)进行一次<a href="http://en.wikipedia.org/wiki/Three-way_merge" target="_blank" rel="external">三方合并</a>。结果是先保存当前目录和索引，然后和父节点<em>33104</em>一起做一次新提交。<br><img src="http://marklodato.github.io/visual-git-guide/merge.svg" alt="enter image description here"></p>
+<h3 id="Cherry_Pick">Cherry Pick</h3><p>cherry-pick命令”复制”一个提交节点并在当前分支做一次完全一样的新提交。<br><img src="http://marklodato.github.io/visual-git-guide/cherry-pick.svg" alt="enter image description here"></p>
+<h3 id="Rebase">Rebase</h3><p>rebase是合并命令的另一种选择。合并把两个父分支合并进行一次提交，提交历史不是线性的。rebase在当前分支上重演另一个分支的历史，提交历史是线性的。</p>
+<p>本质上，这是线性化的自动的 <a href="#cherry-pick">cherry-pick</a>。<br><img src="http://marklodato.github.io/visual-git-guide/rebase.svg" alt="enter image description here"><br>上面的命令都在<em>topic</em>分支中进行，而不是<em>master</em>分支，在<em>master</em>分支上重演，并且把分支指向新的节点。注意旧提交没有被引用，将被回收。</p>
+<p>要限制回滚范围，使用<code>--onto</code>选项。下面的命令在<em>master</em>分支上重演当前分支从<em>169a6</em>以来的最近几个提交，即<em>2c33a</em>。<br><img src="http://marklodato.github.io/visual-git-guide/rebase-onto.svg" alt="enter image description here"></p>
+<p>同样有<code>git rebase --interactive</code>让你更方便的完成一些复杂操作，比如丢弃、重排、修改、合并提交。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HawSkull</a></p>
+        <p><span>发布时间:</span>2015-01-26, 13:15:39</p>
+        <p><span>最后更新:</span>2015-01-29, 13:15:39</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2015/01/26/5_Git/" title="5_Git之图解Git命令">http://r00to1.github.io/2015/01/26/5_Git/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2015/01/26/5_Git/　　作者: HawSkull" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2015/01/27/4_Git/">
+                    4_Git之检查仓库状态
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2015/01/25/6_Git/">
+                    6_Git之代码合并：Merge、Rebase的选择
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本用法"><span class="toc-number">1.</span> <span class="toc-text">基本用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#约定"><span class="toc-number">2.</span> <span class="toc-text">约定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#命令详解"><span class="toc-number">3.</span> <span class="toc-text">命令详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Diff"><span class="toc-number">3.1.</span> <span class="toc-text">Diff</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Commit"><span class="toc-number">3.2.</span> <span class="toc-text">Commit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Checkout"><span class="toc-number">3.3.</span> <span class="toc-text">Checkout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HEAD标识处于分离状态时的提交操作"><span class="toc-number">3.4.</span> <span class="toc-text">HEAD标识处于分离状态时的提交操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reset"><span class="toc-number">3.5.</span> <span class="toc-text">Reset</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Merge"><span class="toc-number">3.6.</span> <span class="toc-text">Merge</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cherry_Pick"><span class="toc-number">3.7.</span> <span class="toc-text">Cherry Pick</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rebase"><span class="toc-number">3.8.</span> <span class="toc-text">Rebase</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"5_Git之图解Git命令　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2015/01/26/5_Git/" data-title="5_Git之图解Git命令" data-url="http://r00to1.github.io/2015/01/26/5_Git/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2015/01/27/4_Git/" title="上一篇: 4_Git之检查仓库状态">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2015/01/25/6_Git/" title="下一篇: 6_Git之代码合并：Merge、Rebase的选择">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2017 HawSkull
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>

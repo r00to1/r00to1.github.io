@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="HawSkull" />
+
+
+
+<meta name="description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+
+Q:我为什么要做这份菜单在整理Git资料的时候，我发现社区贡献了非常多高质量的博客文章、指南等等。尤其英文的那些资料，除了大家熟知的《Git图解》，还有好多优秀的文章仍无人翻译。此外，这些资料往往只涉及某些特定的话题，如果能有一份菜单将这些菜谱以特定的方式串起来，那么对于Git学习者来说将会是极大的便利。尤其对于我这样热爱查阅社区资料胜过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="1-Git之快速指南">
+<meta property="og:url" content="http://r00to1.github.io/2015/01/30/1_Git/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+
+Q:我为什么要做这份菜单在整理Git资料的时候，我发现社区贡献了非常多高质量的博客文章、指南等等。尤其英文的那些资料，除了大家熟知的《Git图解》，还有好多优秀的文章仍无人翻译。此外，这些资料往往只涉及某些特定的话题，如果能有一份菜单将这些菜谱以特定的方式串起来，那么对于Git学习者来说将会是极大的便利。尤其对于我这样热爱查阅社区资料胜过">
+<meta property="og:image" content="http://www.bootcss.com/p/git-guide/img/trees.png">
+<meta property="og:updated_time" content="2015-01-30T05:15:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="1-Git之快速指南">
+<meta name="twitter:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
+
+Q:我为什么要做这份菜单在整理Git资料的时候，我发现社区贡献了非常多高质量的博客文章、指南等等。尤其英文的那些资料，除了大家熟知的《Git图解》，还有好多优秀的文章仍无人翻译。此外，这些资料往往只涉及某些特定的话题，如果能有一份菜单将这些菜谱以特定的方式串起来，那么对于Git学习者来说将会是极大的便利。尤其对于我这样热爱查阅社区资料胜过">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>1-Git之快速指南 | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HawSkull</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HawSkull</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HawSkull</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-1_Git" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/30/1_Git/" class="article-date">
+      <time datetime="2015-01-30T05:15:39.000Z" itemprop="datePublished">2015-01-30</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      1-Git之快速指南
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <hr>
+<blockquote>
+<p>转载：感谢<a href="https://github.com/geeeeeeeeek" target="_blank" rel="external">童仲毅</a>同学写了该系列文章，我只是搬运工，谢谢!</p>
+</blockquote>
+<h2 id="Q:我为什么要做这份菜单">Q:我为什么要做这份菜单</h2><p>在整理Git资料的时候，我发现社区贡献了非常多高质量的博客文章、指南等等。尤其英文的那些资料，除了大家熟知的《Git图解》，还有好多优秀的文章仍无人翻译。此外，这些资料往往只涉及某些特定的话题，如果能有一份菜单将这些菜谱以特定的方式串起来，那么对于Git学习者来说将会是极大的便利。尤其对于我这样热爱查阅社区资料胜过出版物的懒人 : ) 随着我的学习节奏还会不断有新的菜谱加入进来，或许不会很频繁，不过也没有确定的终点。</p>
+<h2 id="版权说明">版权说明</h2><p>除非另行注明，这个项目中的所有内容采用知识共享-署名(<a href="http://creativecommons.org/licenses/by/2.5/au/deed.zh" target="_blank" rel="external">CC BY 2.5 AU</a>)协议共享，童仲毅(geeeeeeeeek@github)版权所有。<br><a id="more"></a><br>其中不少资料是在原基础上翻译或演绎而来的，我都在页面最上方标明了原作者、原文链接以及原文采用的协议。如仍有版权疑问，请在issue中提出。</p>
+<p>欢迎通过issue或者pr推荐你认为合适的资料，让这份菜单更充实一些。</p>
+<blockquote>
+<p>除非另行注明，页面上所有内容采用知识共享-署名(<a href="http://creativecommons.org/licenses/by/2.5/au/deed.zh" target="_blank" rel="external">CC BY 2.5 AU</a>)协议共享。<a href="https://github.com/rogerdudler/git-guide/" target="_blank" rel="external">git-guide</a> 项目对本文亦有贡献。</p>
+</blockquote>
+<p>这节是完全面向入门者的，我假设你从零开始创建一个项目并且想用Git来进行版本控制，因此本文会避开分支这些相对复杂的概念。</p>
+<p>在这节中，我会介绍如何在你的个人项目中使用Git，我们会讨论Git最基本的操作——如何初始化你的项目，如何管理新的或者已有的文件，如何在远端仓库中储存你的代码。</p>
+<h2 id="一、安装Git">一、安装Git</h2><ul>
+<li>Mac用户：Xcode Command Line Tools自带Git (<code>xcode-select --install</code> )</li>
+<li>Linux用户：<code>sudo apt-get install git</code></li>
+<li>Windows用户：下载<a href="http://git-for-windows.github.io" target="_blank" rel="external">Git SCM</a></li>
+<li>对于Windows用户，安装后如果希望在全局的cmd中使用git，需要把git.exe加入PATH环境变量中，或在Git Bash中使用Git。</li>
+</ul>
+<h2 id="二、检出仓库">二、检出仓库</h2><p>执行如下命令以创建一个本地仓库的克隆版本：<br><code>git clone /path/to/repository</code></p>
+<p>如果是远端服务器上的仓库，你的命令会是这个样子：<br><code>git clone username@host:/path/to/repository</code> （通过SSH）<br>或者：<br><code>git clone https:/path/to/repository.git</code> （通过https）</p>
+<p>比如说<code>git clone https://github.com/geeeeeeeeek/git-recipes.git</code>可以将git教程clone到你指定的目录。</p>
+<h2 id="三、创建新仓库">三、创建新仓库</h2><p>创建新文件夹，打开，然后执行 <code>git init</code>以创建新的 git 仓库。</p>
+<blockquote>
+<p>下面每一步中，你都可以通过<code>git status</code>来查看你的git仓库状态。</p>
+</blockquote>
+<h2 id="四、工作流">四、工作流</h2><p>你的本地仓库由 git 维护的三棵“树”组成。第一个是你的 <code>工作目录</code>，它持有实际文件；第二个是 <code>缓存区(Index)</code>，它像个缓存区域，临时保存你的改动；最后是 <code>HEAD</code>，指向你最近一次提交后的结果。<br><img src="http://www.bootcss.com/p/git-guide/img/trees.png" alt="enter image description here"></p>
+<blockquote>
+<p>事实上，第三个阶段是commit history的图。HEAD一般是指向最新一次commit的引用。现在暂时不必究其细节。</p>
+</blockquote>
+<h2 id="五、添加与提交">五、添加与提交</h2><p>你可以计划改动（把它们添加到缓存区），使用如下命令：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">git</span> <span class="keyword">add </span>&lt; filename &gt;</span><br><span class="line"><span class="label">git</span> <span class="keyword">add </span>*</span><br></pre></td></tr></table></figure></p>
+<p>这是 git 基本工作流程的第一步。使用如下命令以实际提交改动：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="operator"><span class="keyword">commit</span> -<span class="keyword">m</span> <span class="string">"代码提交信息"</span></span></span><br></pre></td></tr></table></figure></p>
+<p>现在，你的改动已经提交到了 HEAD，但是还没到你的远端仓库。</p>
+<blockquote>
+<p>在开发时，良好的习惯是根据工作进度及时commit，并务必注意附上有意义的commit message。创建完项目目录后，第一次提交的commit message一般为”Initial commit.”。</p>
+</blockquote>
+<h2 id="六、推送改动">六、推送改动</h2><p>你的改动现在已经在本地仓库的 HEAD 中了。执行如下命令以将这些改动提交到远端仓库：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">git</span> <span class="keyword">push </span>origin master</span><br></pre></td></tr></table></figure></p>
+<p>可以把 master 换成你想要推送的任何分支。 </p>
+<p>如果你还没有克隆现有仓库，并欲将你的仓库连接到某个远程服务器，你可以使用如下命令添加：<br><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">git</span> remote <span class="keyword">add </span>origin &lt;server&gt;</span><br></pre></td></tr></table></figure></p>
+<p>如此你就能够将你的改动推送到所添加的服务器上去了。</p>
+<blockquote>
+<ul>
+<li>这里origin是&lt; server &gt;的别名，取什么名字都可以，你也可以在push时将&lt; server &gt;替换为origin。但为了以后push方便，我们第一次一般都会先remote add。</li>
+<li>如果你还没有git仓库，可以在Github等代码托管平台上创建一个空(不要自动生成README.md)的repository，然后将代码push到远端仓库。</li>
+</ul>
+</blockquote>
+<h5 id="至此，你应该可以顺利地提交你的项目了。在下一节中，我们将涉及更多的命令，来完成更有用的操作。比如从远端的仓库拉取更新并且合并到你的本地，如何通过分支多人协作，如何处理不同分支的冲突等等。">至此，你应该可以顺利地提交你的项目了。在下一节中，我们将涉及更多的命令，来完成更有用的操作。比如从远端的仓库拉取更新并且合并到你的本地，如何通过分支多人协作，如何处理不同分支的冲突等等。</h5>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2015/01/30/1_Git/">1-Git之快速指南</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HawSkull</a></p>
+        <p><span>发布时间:</span>2015-01-30, 13:15:39</p>
+        <p><span>最后更新:</span>2015-01-30, 13:15:39</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2015/01/30/1_Git/" title="1-Git之快速指南">http://r00to1.github.io/2015/01/30/1_Git/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2015/01/30/1_Git/　　作者: HawSkull" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2015/02/09/burp-sqlmap-tools/">
+                    渗透测试套件BurpSuite 之 sqlmap快速执行脚本
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2015/01/29/2_Git/">
+                    2_Git之创建代码仓库
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Q:我为什么要做这份菜单"><span class="toc-number">1.</span> <span class="toc-text">Q:我为什么要做这份菜单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#版权说明"><span class="toc-number">2.</span> <span class="toc-text">版权说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、安装Git"><span class="toc-number">3.</span> <span class="toc-text">一、安装Git</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、检出仓库"><span class="toc-number">4.</span> <span class="toc-text">二、检出仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、创建新仓库"><span class="toc-number">5.</span> <span class="toc-text">三、创建新仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、工作流"><span class="toc-number">6.</span> <span class="toc-text">四、工作流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、添加与提交"><span class="toc-number">7.</span> <span class="toc-text">五、添加与提交</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、推送改动"><span class="toc-number">8.</span> <span class="toc-text">六、推送改动</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#至此，你应该可以顺利地提交你的项目了。在下一节中，我们将涉及更多的命令，来完成更有用的操作。比如从远端的仓库拉取更新并且合并到你的本地，如何通过分支多人协作，如何处理不同分支的冲突等等。"><span class="toc-number">8.0.0.1.</span> <span class="toc-text">至此，你应该可以顺利地提交你的项目了。在下一节中，我们将涉及更多的命令，来完成更有用的操作。比如从远端的仓库拉取更新并且合并到你的本地，如何通过分支多人协作，如何处理不同分支的冲突等等。</span></a></li></ol></li></ol></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"1-Git之快速指南　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2015/01/30/1_Git/" data-title="1-Git之快速指南" data-url="http://r00to1.github.io/2015/01/30/1_Git/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2015/02/09/burp-sqlmap-tools/" title="上一篇: 渗透测试套件BurpSuite 之 sqlmap快速执行脚本">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2015/01/29/2_Git/" title="下一篇: 2_Git之创建代码仓库">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2017 HawSkull
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>

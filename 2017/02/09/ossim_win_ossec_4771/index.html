@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="HawSkull" />
+
+
+
+<meta name="description" content="介绍OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：
+
+ossec http://ossec.github.io/
+
+今天就来看下,怎么一步一步配置4771暴力破解攻击的报警.
+储备知识
+接收所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解OSSIM-OSSEC WIN 4771 案例">
+<meta property="og:url" content="http://r00to1.github.io/2017/02/09/ossim_win_ossec_4771/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="介绍OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：
+
+ossec http://ossec.github.io/
+
+今天就来看下,怎么一步一步配置4771暴力破解攻击的报警.
+储备知识
+接收所">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/1.jpg">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/2.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/3.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/5.jpg">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/6.jpg">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/7.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/8.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/11.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/12.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/13.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/14.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/15.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/16.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/17.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/18.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/20.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossmi_win/21.png">
+<meta property="og:updated_time" content="2017-02-09T05:07:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="详解OSSIM-OSSEC WIN 4771 案例">
+<meta name="twitter:description" content="介绍OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：
+
+ossec http://ossec.github.io/
+
+今天就来看下,怎么一步一步配置4771暴力破解攻击的报警.
+储备知识
+接收所">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>详解OSSIM-OSSEC WIN 4771 案例 | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HawSkull</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HawSkull</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HawSkull</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-ossim_win_ossec_4771" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/02/09/ossim_win_ossec_4771/" class="article-date">
+      <time datetime="2017-02-09T04:07:32.000Z" itemprop="datePublished">2017-02-09</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      详解OSSIM-OSSEC WIN 4771 案例
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/agent/">agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossec/">ossec</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossim/">ossim</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/win/">win</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="介绍">介绍</h1><p>OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：</p>
+<blockquote>
+<p>ossec <a href="http://ossec.github.io/" target="_blank" rel="external">http://ossec.github.io/</a></p>
+</blockquote>
+<p>今天就来看下,怎么一步一步配置4771暴力破解攻击的报警.</p>
+<h1 id="储备知识">储备知识</h1><hr>
+<h2 id="接收所有日志">接收所有日志</h2><p>因为默认情况下,不是所有的日志都会接收,所以我们首先要打开ossec发送过来的所有日志:</p>
+<a id="more"></a>
+<p><img src="/images/ossmi_win/1.jpg" alt="图片"></p>
+<p>如图操作之后,就可以看到ossec agent所有接收到的日志:</p>
+<p>修改完记得要重启hids服务： Environment &gt; Detection &gt; HIDS &gt; HIDS Control.–&gt;Restart.</p>
+<p>现在就可以看到所有ossec agent所接受到的日志:</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">#tail</span> -<span class="number">10</span>f /<span class="built_in">var</span>/ossec/logs/archives/archives<span class="built_in">.</span><span class="keyword">log</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="匹配规则和报警">匹配规则和报警</h2><p>默认Ossec有900多条规则,基本上可以涵盖操作系统的各种异常事件,规则路径<code>/var/ossec/alienvault/rules</code></p>
+<p><img src="/images/ossmi_win/2.png" alt="图片"></p>
+<p>如果接收到的日志能被规则所匹配就会产生一条报警:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor"># tail -<span class="number">10f</span>  /var/ossec/logs/alerts/alerts.log</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="插件ID和_SID">插件ID和 SID</h2><p>ossim中插件甚多,可分为采集插件和监视插件,每个插件又有ID和SID,插件位置:<code>/etc/ossim/agent/plugins</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">alienvault:/etc/ossim/agent/plugins<span class="preprocessor"># ll</span></span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault   <span class="number">5033</span> Jun <span class="number">27</span>  <span class="number">2016</span> actiontec.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault  <span class="number">20029</span> Nov <span class="number">29</span> <span class="number">00</span>:<span class="number">34</span> aerohive-wap.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault   <span class="number">5736</span> Jun <span class="number">16</span>  <span class="number">2015</span> airlock.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault   <span class="number">1720</span> Nov <span class="number">15</span> <span class="number">00</span>:<span class="number">37</span> airport-extreme.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault  <span class="number">12580</span> Sep <span class="number">20</span> <span class="number">16</span>:<span class="number">59</span> aix-audit.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault    <span class="number">744</span> Jun <span class="number">16</span>  <span class="number">2015</span> aladdin.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault   <span class="number">6869</span> Jul <span class="number">25</span>  <span class="number">2016</span> alcatel.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault  <span class="number">12886</span> Jan <span class="number">10</span> <span class="number">23</span>:<span class="number">30</span> alienvault_plugins.<span class="built_in">list</span></span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault   <span class="number">8812</span> Jun <span class="number">16</span>  <span class="number">2015</span> allot.cfg</span><br><span class="line">-rw-r--r-- <span class="number">1</span> root alienvault   <span class="number">1064</span> Jun <span class="number">16</span>  <span class="number">2015</span> alteonos.cfg</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p>比如rule id为18105 对应的插件是:<code>ossec-single-line.cfg</code></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="special">[</span>1388 - Windows Audit Failure: Attempt to reset password<span class="special">]</span></span><br><span class="line">event_type=event</span><br><span class="line"><span class="special">#</span>precheck="18105"</span><br><span class="line">regexp="^AV<span class="command">\s</span>+<span class="command">\-</span><span class="command">\sAlert</span><span class="command">\s</span>+<span class="command">\-</span><span class="command">\s</span><span class="command">\"</span>(?P&lt;date&gt;<span class="command">\d</span>+)<span class="command">\"</span><span class="command">\s</span><span class="command">\-</span><span class="command">\-</span>&gt;<span class="command">\sRID</span><span class="command">\:</span><span class="command">\s</span><span class="command">\"</span>(?P&lt;rule_id&gt;18105)<span class="command">\"</span><span class="command">\;</span><span class="command">\s</span>+RL<span class="command">\:</span><span class="command">\s</span>+<span class="command">\"</span>(?P&lt;rule_level&gt;<span class="command">\d</span>+)<span class="command">\"</span><span class="command">\;</span><span class="command">\s</span>+RG<span class="command">\:</span><span class="command">\s</span>+<span class="command">\"</span>(?P&lt;rule_group&gt;<span class="special">[</span>^"<span class="special">]</span>*)<span class="command">\"</span><span class="command">\;</span><span class="command">\s</span>+RC<span class="command">\:</span><span class="command">\s</span>+<span class="command">\"</span>(?P&lt;rule_comment&gt;<span class="special">[</span>^"<span class="special">]</span>*)<span class="command">\"</span>;<span class="command">\sUSER</span>:<span class="command">\s</span>+<span class="command">\"</span><span class="special">[</span>^"<span class="special">]</span>+<span class="command">\"</span>;<span class="command">\sSRCIP</span>:<span class="command">\s</span><span class="command">\"</span>(?P&lt;srcip&gt;<span class="special">[</span>^"<span class="special">]</span>*)<span class="command">\"</span><span class="command">\;</span><span class="command">\sHOSTNAME</span>:<span class="command">\s</span>+<span class="command">\"</span><span class="command">\(</span>(?P&lt;hostname&gt;<span class="special">[</span>^)<span class="special">]</span>+)<span class="command">\)</span><span class="command">\s</span>(?P&lt;winip&gt;<span class="command">\S</span>+)-&gt;<span class="special">[</span>^"<span class="special">]</span>*<span class="command">\"</span>;<span class="command">\sLOCATION</span><span class="command">\:</span><span class="command">\s</span><span class="command">\"</span>(?P&lt;location&gt;<span class="special">[</span>^"<span class="special">]</span>*)<span class="command">\"</span><span class="command">\;</span><span class="command">\s</span>+EVENT<span class="command">\:</span><span class="command">\s</span>+<span class="command">\"</span><span class="command">\[</span>INIT<span class="command">\]</span>(?P&lt;log&gt;.*?An<span class="command">\sattempt</span><span class="command">\swas</span><span class="command">\smade</span><span class="command">\sto</span><span class="command">\sreset</span><span class="command">\san</span><span class="command">\saccount</span>'s<span class="command">\spassword</span>.*?Account<span class="command">\sName</span>:<span class="command">\s</span>+(?P&lt;username&gt;.*?)<span class="command">\s</span>+Account<span class="command">\sDomain</span><span class="special">[</span>^<span class="special">[</span><span class="special">]</span>*)<span class="command">\[</span>END<span class="command">\]</span><span class="command">\"</span><span class="command">\;</span>"</span><br><span class="line">date=<span class="special">&#123;</span>normalize_date(<span class="formula">$date)<span class="special">&#125;</span></span><br><span class="line">plugin_id=<span class="special">&#123;</span>translate($</span>rule_id)<span class="special">&#125;</span>  注意这里有个翻译关系</span><br><span class="line">plugin_sid=102000</span><br><span class="line">device=<span class="special">&#123;</span>resolv(<span class="formula">$winip)<span class="special">&#125;</span></span><br><span class="line">src_ip=<span class="special">&#123;</span>resolv($</span>winip)<span class="special">&#125;</span></span><br><span class="line">dst_ip=<span class="special">&#123;</span>resolv(<span class="formula">$winip)<span class="special">&#125;</span></span><br><span class="line">username=<span class="special">&#123;</span>$</span>username<span class="special">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>继续在文件中找找翻译关系:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">18105</span>=<span class="number">7006</span></span><br></pre></td></tr></table></figure>
+<p>所以这里的plugin_id=7006<br>18105 是事件类型id</p>
+<hr>
+<p>如图我们看看plugin_id=7085的插件有哪些事件类型id:</p>
+<p><img src="/images/ossmi_win/3.png" alt="图片"></p>
+<hr>
+<h2 id="关联分析指令">关联分析指令</h2><p>免费的ossim默认只提供了80多个相关的分析指令.</p>
+<p>指令地址:<code>/etc/ossim/server</code></p>
+<p>我们自己新建的指令在:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor"># pwd</span></span><br><span class="line">/etc/ossim/server/abb1c771-e2ce-<span class="number">11e6</span>-<span class="number">9443</span>-<span class="number">1</span>b37c2298626</span><br><span class="line"><span class="preprocessor"># ls</span></span><br><span class="line">directives.xml  disabled_directives.data  user.xml</span><br></pre></td></tr></table></figure></p>
+<p>我们详细看一条指令,例如7085:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">directive</span> <span class="attribute">id</span>=<span class="value">"500001"</span> <span class="attribute">name</span>=<span class="value">"AV-FREE-FEED Bruteforce attack, Windows authentication attack against DST_IP"</span> <span class="attribute">priority</span>=<span class="value">"4"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">type</span>=<span class="value">"detector"</span> <span class="attribute">name</span>=<span class="value">"Windows authentication failure attempts"</span> <span class="attribute">from</span>=<span class="value">"ANY"</span> <span class="attribute">to</span>=<span class="value">"ANY"</span> <span class="attribute">port_from</span>=<span class="value">"ANY"</span> <span class="attribute">port_to</span>=<span class="value">"ANY"</span> <span class="attribute">reliability</span>=<span class="value">"1"</span> <span class="attribute">occurrence</span>=<span class="value">"1"</span> <span class="attribute">plugin_id</span>=<span class="value">"7085"</span> <span class="attribute">plugin_sid</span>=<span class="value">"18106,18130,18135,18136"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="title">rules</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">type</span>=<span class="value">"detector"</span> <span class="attribute">name</span>=<span class="value">"Windows Authentication failure"</span> <span class="attribute">from</span>=<span class="value">"1:SRC_IP"</span> <span class="attribute">to</span>=<span class="value">"1:DST_IP"</span> <span class="attribute">port_from</span>=<span class="value">"ANY"</span> <span class="attribute">port_to</span>=<span class="value">"ANY"</span> <span class="attribute">reliability</span>=<span class="value">"10"</span> <span class="attribute">occurrence</span>=<span class="value">"3"</span> <span class="attribute">time_out</span>=<span class="value">"15"</span> <span class="attribute">plugin_id</span>=<span class="value">"7085"</span> <span class="attribute">plugin_sid</span>=<span class="value">"18106,18130,18135,18136"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="title">rules</span>&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">type</span>=<span class="value">"detector"</span> <span class="attribute">name</span>=<span class="value">"Windows Authentication failure"</span> <span class="attribute">from</span>=<span class="value">"1:SRC_IP"</span> <span class="attribute">to</span>=<span class="value">"1:DST_IP"</span> <span class="attribute">port_from</span>=<span class="value">"ANY"</span> <span class="attribute">port_to</span>=<span class="value">"ANY"</span> <span class="attribute">reliability</span>=<span class="value">"10"</span> <span class="attribute">occurrence</span>=<span class="value">"10"</span> <span class="attribute">time_out</span>=<span class="value">"30"</span> <span class="attribute">plugin_id</span>=<span class="value">"7085"</span> <span class="attribute">plugin_sid</span>=<span class="value">"18106,18130,18135,18136"</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="title">rules</span>&gt;</span></span><br><span class="line">                     <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">type</span>=<span class="value">"detector"</span> <span class="attribute">name</span>=<span class="value">"Windows Authentication failure"</span> <span class="attribute">from</span>=<span class="value">"1:SRC_IP"</span> <span class="attribute">to</span>=<span class="value">"1:DST_IP"</span> <span class="attribute">port_from</span>=<span class="value">"ANY"</span> <span class="attribute">port_to</span>=<span class="value">"ANY"</span> <span class="attribute">reliability</span>=<span class="value">"10"</span> <span class="attribute">occurrence</span>=<span class="value">"50"</span> <span class="attribute">time_out</span>=<span class="value">"300"</span> <span class="attribute">plugin_id</span>=<span class="value">"7085"</span> <span class="attribute">plugin_sid</span>=<span class="value">"18106,18130,18135,18136"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="title">rules</span>&gt;</span></span><br><span class="line">                           <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">type</span>=<span class="value">"detector"</span> <span class="attribute">name</span>=<span class="value">"Windows Authentication failure"</span> <span class="attribute">from</span>=<span class="value">"1:SRC_IP"</span> <span class="attribute">to</span>=<span class="value">"1:DST_IP"</span> <span class="attribute">port_from</span>=<span class="value">"ANY"</span> <span class="attribute">port_to</span>=<span class="value">"ANY"</span> <span class="attribute">reliability</span>=<span class="value">"10"</span> <span class="attribute">occurrence</span>=<span class="value">"200"</span> <span class="attribute">time_out</span>=<span class="value">"1000"</span> <span class="attribute">plugin_id</span>=<span class="value">"7085"</span> <span class="attribute">plugin_sid</span>=<span class="value">"18106,18130,18135,18136"</span>&gt;</span></span><br><span class="line">                              <span class="tag">&lt;<span class="title">rules</span>&gt;</span></span><br><span class="line">                                 <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">type</span>=<span class="value">"detector"</span> <span class="attribute">name</span>=<span class="value">"Windows Authentication failure"</span> <span class="attribute">from</span>=<span class="value">"1:SRC_IP"</span> <span class="attribute">to</span>=<span class="value">"1:DST_IP"</span> <span class="attribute">port_from</span>=<span class="value">"ANY"</span> <span class="attribute">port_to</span>=<span class="value">"ANY"</span> <span class="attribute">reliability</span>=<span class="value">"10"</span> <span class="attribute">occurrence</span>=<span class="value">"2000"</span> <span class="attribute">time_out</span>=<span class="value">"3600"</span> <span class="attribute">plugin_id</span>=<span class="value">"7085"</span> <span class="attribute">plugin_sid</span>=<span class="value">"18106,18130,18135,18136"</span>/&gt;</span></span><br><span class="line">                              <span class="tag">&lt;/<span class="title">rules</span>&gt;</span></span><br><span class="line">                           <span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="title">rules</span>&gt;</span></span><br><span class="line">                     <span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;/<span class="title">rules</span>&gt;</span></span><br><span class="line">               <span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="title">rules</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="title">rules</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">directive</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/ossmi_win/5.jpg" alt="图片"></p>
+<p><img src="/images/ossmi_win/6.jpg" alt="图片"></p>
+<h1 id="4771报警详解">4771报警详解</h1><p>有了刚刚上面的知识储备,就可以开始今天的正题了,首先我们看一下win 4771 事件代表什么?</p>
+<blockquote>
+<p>4771事件:代表在域内的账号在除域控制器意外的任何一台加入域的计算机上登陆产生的登陆失败的日志(有点绕,多读几遍)</p>
+</blockquote>
+<p><img src="/images/ossmi_win/7.png" alt="图片"></p>
+<h2 id="接收并查找相关日志">接收并查找相关日志</h2><p>为了找到ossec发送过来的原始4771日志,我们首先需要打开接收所有日志,然后从日志中筛选出有关4771告警的日志:</p>
+<p>打开接收所有日志上面的储备知识中已经介绍,这里不再赘述,请按照步骤操作.</p>
+<p>到域控制器上部署ossec ,具体步骤请参考 <a href="http://sosec.cc/2016/01/09/ossim_linux_agent/" target="_blank" rel="external">OSSIM-HIDS</a></p>
+<p>在域内的客户机登陆域内的任意账号,查找有关<code>4771</code>的告警日志:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">alienvault:/<span class="preprocessor"># tail -<span class="number">10f</span> /var/ossec/logs/archives/archives.log |grep <span class="string">"4771"</span></span></span><br><span class="line"><span class="number">2017</span> Mar <span class="number">02</span> <span class="number">10</span>:<span class="number">01</span>:<span class="number">32</span> (Host-<span class="number">192</span>-<span class="number">168</span>-<span class="number">69</span>-<span class="number">109</span>) <span class="number">192.168</span><span class="number">.69</span><span class="number">.109</span>-&gt;WinEvtLog <span class="number">2017</span> Mar <span class="number">02</span> <span class="number">10</span>:<span class="number">01</span>:<span class="number">27</span> WinEvtLog: Security: AUDIT_FAILURE(<span class="number">4771</span>): Microsoft-Windows-Security-A</span><br><span class="line">uditing: (no user): no domain: WIN-P84RKPA31HU.zymtest08.com: Kerberos pre-authentication failed. Account Information:  Security ID:  S-<span class="number">1</span>-<span class="number">5</span>-<span class="number">21</span>-<span class="number">2947644658</span>-<span class="number">998118976</span></span><br><span class="line">-<span class="number">1121298578</span>-<span class="number">1117</span>  Account Name:  cc  Service Information:  Service Name:  krbtgt/ZYMTEST08  Network Information:  Client Address:  ::ffff:<span class="number">192.168</span><span class="number">.69</span><span class="number">.147</span>  Client Port:</span><br><span class="line"><span class="number">1172</span>  Additional Information:  Ticket Options:  <span class="number">0x40810010</span>  Failure Code:  <span class="number">0x18</span>  Pre-Authentication Type: <span class="number">2</span>  Certificate Information:  Certificate Issuer Name:    </span><br><span class="line">Certificate Serial Number:    Certificate Thumbprint:    Certificate information is only provided <span class="keyword">if</span> a certificate was used <span class="keyword">for</span> pre-authentication.  Pre-authentication </span><br><span class="line">types, ticket options and failure codes are defined in RFC <span class="number">4120.</span>  If the ticket was malformed or damaged during transit and could not be decrypted, then many fields </span><br><span class="line">in <span class="keyword">this</span> event might not be present.</span><br></pre></td></tr></table></figure>
+<p>如代码所示,我们已经成功的接收到了有关<code>4771</code>的告警日志</p>
+<hr>
+<h2 id="查找匹配的规则和报警">查找匹配的规则和报警</h2><p>上文提到,ossec提供了900多条规则,大多数的事件是可以被匹配到的,我们现在查找下是否有默认策略匹配到4771事件:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">alienvault</span>:/# tail -<span class="number">10</span>f  /var/ossec/logs/alerts/alerts.log |grep <span class="string">"4771"</span></span><br><span class="line">AV - Alert - <span class="string">"1488420926"</span> --&gt; <span class="attribute">RID</span>: <span class="string">"18105"</span>; <span class="attribute">RL</span>: <span class="string">"4"</span>; <span class="attribute">RG</span>: <span class="string">"windows,"</span>; <span class="attribute">RC</span>: <span class="string">"Windows audit failure event."</span>; <span class="attribute">USER</span>: <span class="string">"(no user)"</span>; <span class="attribute">SRCIP</span>: <span class="string">"None"</span>; <span class="attribute">HOSTNAME</span>:</span><br><span class="line"> <span class="string">"(Host-192-168-69-109) 192.168.69.109-&gt;WinEvtLog"</span>; <span class="attribute">LOCATION</span>: <span class="string">"(Host-192-168-69-109) 192.168.69.109-&gt;WinEvtLog"</span>; <span class="attribute">EVENT</span>: "[INIT]<span class="number">2017</span> Mar <span class="number">02</span> <span class="number">10</span>:<span class="number">15</span>:<span class="number">19</span> </span><br><span class="line"> <span class="attribute">WinEvtLog</span>: <span class="attribute">Security</span>: <span class="function">AUDIT_FAILURE</span>(<span class="number">4771</span>): <span class="attribute">Microsoft-Windows-Security-Auditing</span>: (no user): no <span class="attribute">domain</span>: WIN-P84RKPA31HU.zymtest08.<span class="attribute">com</span>: Kerberos </span><br><span class="line"> pre-authentication failed. Account <span class="attribute">Information</span>:  Security <span class="attribute">ID</span>:  S-<span class="number">1</span>-<span class="number">5</span>-<span class="number">21</span>-<span class="number">2947644658</span>-<span class="number">998118976</span>-<span class="number">1121298578</span>-<span class="number">1117</span>  Account <span class="attribute">Name</span>:  cc  Service <span class="attribute">Information</span>:</span><br><span class="line"> Service <span class="attribute">Name</span>:  krbtgt/ZYMTEST08  Network <span class="attribute">Information</span>:  Client <span class="attribute">Address</span>:  ::<span class="attribute">ffff</span>:<span class="number">192.168</span>.<span class="number">69.147</span>  Client <span class="attribute">Port</span>:  <span class="number">1185</span>  Additional <span class="attribute">Information</span>:  </span><br><span class="line"> Ticket <span class="attribute">Options</span>:  <span class="number">0</span>x40810010  Failure <span class="attribute">Code</span>:  <span class="number">0</span>x18  Pre-Authentication <span class="attribute">Type</span>: <span class="number">2</span>  Certificate <span class="attribute">Information</span>:  Certificate Issuer <span class="attribute">Name</span>:    Certificate </span><br><span class="line"> Serial <span class="attribute">Number</span>:    Certificate <span class="attribute">Thumbprint</span>:    Certificate information is only provided if a certificate was used for pre-authentication.  Pre-authentication </span><br><span class="line"> types, ticket options and failure codes are defined in RFC <span class="number">4120</span>.  If the ticket was malformed or damaged during transit and could not be decrypted, then many </span><br><span class="line"> fields in this event might not be present.[END]";</span><br></pre></td></tr></table></figure>
+<p>在规则文件目录查找<code>Windows audit failure event.</code></p>
+<p>通过查看告警日志,我们成功的发现了4771已经被规则匹配出来,其实这里被匹配出的4771事件不是使用关键字<code>4771</code>在ossec规则中匹配到的,我们详细看下配置这个<code>4771</code>的规则是<code>/var/ossec/alienvault/rules/msauth_rules.xml</code>文件:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">group</span> <span class="attribute">name</span>=<span class="value">"windows,"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">id</span>=<span class="value">"18100"</span> <span class="attribute">level</span>=<span class="value">"0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">category</span>&gt;</span>windows<span class="tag">&lt;/<span class="title">category</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">description</span>&gt;</span>Group of windows rules.<span class="tag">&lt;/<span class="title">description</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br><span class="line">  </span><br><span class="line"> 中间忽略......</span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="title">rule</span> <span class="attribute">id</span>=<span class="value">"18105"</span> <span class="attribute">level</span>=<span class="value">"4"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">if_sid</span>&gt;</span>18100<span class="tag">&lt;/<span class="title">if_sid</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">status</span>&gt;</span>^AUDIT_FAILURE|^failure<span class="tag">&lt;/<span class="title">status</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">description</span>&gt;</span>Windows audit failure event.<span class="tag">&lt;/<span class="title">description</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过查看规则详情,我们发现真正的匹配是<code>&lt;status&gt;^AUDIT_FAILURE|^failure&lt;/status&gt;</code></p>
+<p>我们返回的接收的原始日志查看,发现这么一段:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WinEvtLog: Security: <span class="function"><span class="title">AUDIT_FAILURE</span><span class="params">(<span class="number">4771</span>)</span></span>:</span><br></pre></td></tr></table></figure>
+<p>正是由于这个关键字,我们成功的匹配到了4771事件,由于不是直接匹配<code>4771</code>事件,所以会存在一定的误报,毕竟登陆失败的代码还有很多,这里我采用修改其他规则文件来匹配<code>4771</code>事件.</p>
+<p>我把<code>18120</code>事件修改成:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">rule</span> <span class="attribute">id</span>=<span class="value">"18120"</span> <span class="attribute">level</span>=<span class="value">"4"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">if_sid</span>&gt;</span>18105<span class="tag">&lt;/<span class="title">if_sid</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">id</span>&gt;</span>^4771$<span class="tag">&lt;/<span class="title">id</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">description</span>&gt;</span>4771-Windows login fail.<span class="tag">&lt;/<span class="title">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">rule</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样就能精确的匹配出<code>4771</code>事件,查看接收到的日志文件:</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">alienvault:~#  tail -10f  /<span class="keyword">var</span>/ossec/logs/alerts/alerts.<span class="keyword">log</span> |grep <span class="string">"18120"</span></span><br><span class="line">AV - Alert - <span class="string">"1488867475"</span> --&gt; RID: <span class="string">"18120"</span>; RL: <span class="string">"4"</span>; RG: <span class="string">"windows,"</span>; RC: <span class="string">"4771-Windows login fail."</span>; USER: <span class="string">"(no user)"</span>; SRCIP: <span class="string">"None"</span>; HOSTNAME:</span><br><span class="line"> <span class="string">"(Host-192-168-0-201) 192.168.0.201-&gt;WinEvtLog"</span>; LOCATION: <span class="string">"(Host-192-168-0-201) 192.168.0.201-&gt;WinEvtLog"</span>; EVENT: "[INIT]2017 Mar 07 14:17:55</span><br><span class="line"> WinEvtLog: Security: AUDIT_FAILURE(4771): Microsoft-Windows-Security-Auditing: (<span class="keyword">no</span> user): <span class="keyword">no</span> domain: GLODON-DC01.grandsoft.com.cn: Kerberos</span><br><span class="line"> pre-authentication failed. Account Information:  Security ID:  S-1-5-21-436374069-1957994488-1801674531-53787  Account Name:  AUTOTEST128004$ </span><br><span class="line"> Service Information:  Service Name:  krbtgt/grandsoft.com.cn  Network Information:  Client Address:  ::ffff:192.168.128.4  Client Port:  58977 </span><br><span class="line"> Additional Information:  Ticket Options:  0x40810010  Failure Code:  0x18  Pre-Authentication <span class="keyword">Type</span>: 2  Certificate Information:  Certificate </span><br><span class="line"> Issuer Name:    Certificate Serial Number:    Certificate Thumbprint:    Certificate information is only provided <span class="keyword">if</span> a certificate was used <span class="keyword">for</span> </span><br><span class="line"> pre-authentication.  Pre-authentication types, ticket options and failure codes are defined <span class="keyword">in</span> RFC 4120.  <span class="keyword">If</span> the ticket was malformed or damaged </span><br><span class="line"> during transit and could not be decrypted, then many fields <span class="keyword">in</span> this event might not be present.[END]";</span><br></pre></td></tr></table></figure>
+<h2 id="查找相关插件ID">查找相关插件ID</h2><p>我们已经把ossec有关报警的sid改成<code>18120</code>了,继续根据<code>18120</code>来查找相关的插件ID是哪个,从而编写出关联分析规则:</p>
+<p>进入到插件目录,我们搜索<code>18120</code>,发现是存在这个插件中<code>ossec-single-line.cfg</code>,我们找到具体的规则:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">18120</span>=<span class="number">7006</span></span><br></pre></td></tr></table></figure>
+<p>所以这里的<code>plugin_id=7006</code></p>
+<p><code>18120</code> 是事件类型id</p>
+<p>至此,我们编写关联分析指令的所有信息都具备了,下面开始编写关联分析指令:</p>
+<hr>
+<h2 id="编写关联分析指令">编写关联分析指令</h2><p>具体的知识,请回顾<code>2.4 关联分析指令</code>,我们新建指令:</p>
+<p>这里填写上NAME,INTENT,STRATEGY,METHOD即可,如图:</p>
+<p><img src="/images/ossmi_win/8.png" alt="图片"></p>
+<blockquote>
+<p>这里着重介绍下 PRIORITY的含义:<br>PRIORITY:优先级,取值为0-5 ,表示如果这个攻击成功了,对系统所造成的影响程度,数值越高,危害就越大,本例来说没必要用4 ,这里要根据实际情况进行选择,这里我用4是为了突出实验效果..</p>
+</blockquote>
+<hr>
+<p>点击<code>SAVE</code>之后,填写规则的名称,这里写个你能看懂的就行:</p>
+<p><img src="/images/ossmi_win/11.png" alt="图片"></p>
+<hr>
+<p>接下来就是用到我们上文提到的插件ID了,前文得之我们需要用<code>7006</code>,这里直接搜索即可,然后选中:</p>
+<p><img src="/images/ossmi_win/12.png" alt="图片"></p>
+<hr>
+<p>然后选择事件类型ID,就是上文提到的 <code>18120</code>,查找填入即可. </p>
+<p><img src="/images/ossmi_win/13.png" alt="图片"></p>
+<hr>
+<p>接下来就是选择源了,因为这是策略的顶层,所以是接收任何<code>ip</code>,也就是<code>any</code>,直接下一步即可:</p>
+<p><img src="/images/ossmi_win/14.png" alt="图片"></p>
+<hr>
+<blockquote>
+<p>这里还要学习几个概念:<br>Risk:取值范围(1-10),这里表示事件的风险值,值越高越要引起重视.计算方法下图已经给出了:<code>Risk = (priority * reliability * asset_value) / 25.</code></p>
+</blockquote>
+<p><img src="/images/ossmi_win/15.png" alt="图片"></p>
+<p>至此我们已经完成一个指令的最上层了,继续重复上面的步骤建立下层:</p>
+<p><img src="/images/ossmi_win/16.png" alt="图片"></p>
+<p><img src="/images/ossmi_win/17.png" alt="图片"></p>
+<p><img src="/images/ossmi_win/18.png" alt="图片"></p>
+<p><img src="/images/ossmi_win/20.png" alt="图片"></p>
+<p><img src="/images/ossmi_win/21.png" alt="图片"></p>
+<blockquote>
+<p>ossim安全交流群:46820390</p>
+</blockquote>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HawSkull</a></p>
+        <p><span>发布时间:</span>2017-02-09, 12:07:32</p>
+        <p><span>最后更新:</span>2017-02-09, 13:07:32</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/02/09/ossim_win_ossec_4771/" title="详解OSSIM-OSSEC WIN 4771 案例">http://r00to1.github.io/2017/02/09/ossim_win_ossec_4771/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2017/02/09/ossim_win_ossec_4771/　　作者: HawSkull" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/02/09/burp1712/">
+                    渗透测试套件BurpSuite Pro v1.7.12破解版下载
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#介绍"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#储备知识"><span class="toc-number">2.</span> <span class="toc-text">储备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#接收所有日志"><span class="toc-number">2.1.</span> <span class="toc-text">接收所有日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#匹配规则和报警"><span class="toc-number">2.2.</span> <span class="toc-text">匹配规则和报警</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#插件ID和_SID"><span class="toc-number">2.3.</span> <span class="toc-text">插件ID和 SID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关联分析指令"><span class="toc-number">2.4.</span> <span class="toc-text">关联分析指令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4771报警详解"><span class="toc-number">3.</span> <span class="toc-text">4771报警详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#接收并查找相关日志"><span class="toc-number">3.1.</span> <span class="toc-text">接收并查找相关日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查找匹配的规则和报警"><span class="toc-number">3.2.</span> <span class="toc-text">查找匹配的规则和报警</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查找相关插件ID"><span class="toc-number">3.3.</span> <span class="toc-text">查找相关插件ID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编写关联分析指令"><span class="toc-number">3.4.</span> <span class="toc-text">编写关联分析指令</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"详解OSSIM-OSSEC WIN 4771 案例　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2017/02/09/ossim_win_ossec_4771/" data-title="详解OSSIM-OSSEC WIN 4771 案例" data-url="http://r00to1.github.io/2017/02/09/ossim_win_ossec_4771/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/02/09/burp1712/" title="下一篇: 渗透测试套件BurpSuite Pro v1.7.12破解版下载">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2017 HawSkull
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>

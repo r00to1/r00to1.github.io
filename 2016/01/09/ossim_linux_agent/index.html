@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="HawSkull" />
+
+
+
+<meta name="description" content="介绍OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：
+
+ossec http://ossec.github.io/
+
+安装准备安装前需要准备编译环境
+
+如果是Debian,需要先执行以下命令:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OSSIM-HIDS for linux">
+<meta property="og:url" content="http://r00to1.github.io/2016/01/09/ossim_linux_agent/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="介绍OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：
+
+ossec http://ossec.github.io/
+
+安装准备安装前需要准备编译环境
+
+如果是Debian,需要先执行以下命令:">
+<meta property="og:image" content="http://r00to1.github.io/images/ossim/1.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossim/2.png">
+<meta property="og:image" content="http://r00to1.github.io/images/ossim/3.png">
+<meta property="og:updated_time" content="2016-01-09T05:07:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OSSIM-HIDS for linux">
+<meta name="twitter:description" content="介绍OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：
+
+ossec http://ossec.github.io/
+
+安装准备安装前需要准备编译环境
+
+如果是Debian,需要先执行以下命令:">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>OSSIM-HIDS for linux | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HawSkull</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HawSkull</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HawSkull</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-ossim_linux_agent" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/01/09/ossim_linux_agent/" class="article-date">
+      <time datetime="2016-01-09T04:07:32.000Z" itemprop="datePublished">2016-01-09</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      OSSIM-HIDS for linux
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/agent/">agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossec/">ossec</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossim/">ossim</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="介绍">介绍</h1><p>OSSIME中的HIDS是通过OSSEC来实现的，OSSEC采用服务端和客户端模式，主要通过文件完整性监视，日志监视，rootcheck和进程监视来主动监视Unix系统活动的所有方面。OSSIM中服务端已经安装完成，只需要在要监控的主机上安装客户端即可：</p>
+<blockquote>
+<p>ossec <a href="http://ossec.github.io/" target="_blank" rel="external">http://ossec.github.io/</a></p>
+</blockquote>
+<h1 id="安装">安装</h1><h2 id="准备">准备</h2><p>安装前需要准备编译环境</p>
+<ul>
+<li>如果是Debian,需要先执行以下命令:</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#apt-get <span class="operator"><span class="keyword">install</span> <span class="keyword">build</span>-essential</span></span><br></pre></td></tr></table></figure>
+<p>下面以在linux主机(centos7)<code>192.168.31.97</code>上安装客户端为例<br>OSSIM_IP == <code>192.168.31.111</code></p>
+<a id="more"></a>
+<hr>
+<h2 id="安装-1">安装</h2><ul>
+<li>在<code>31.97</code>上下载客户端:</li>
+</ul>
+<blockquote>
+<p><a href="https://github.com/ossec/ossec-hids/releases" target="_blank" rel="external">https://github.com/ossec/ossec-hids/releases</a></p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor"># cd /usr/local/src/</span></span><br><span class="line"><span class="preprocessor"># wget http:<span class="comment">//www.ossec.net/files/ossec-hids-2.8.1.tar.gz  #下载客户端</span></span></span><br><span class="line"><span class="preprocessor"># tar -zxvf ossec-hids-<span class="number">2.8</span><span class="number">.1</span>.tar.gz    #解压</span></span><br><span class="line"><span class="preprocessor"># cd ossec-hids-<span class="number">2.8</span><span class="number">.1</span></span></span><br><span class="line"><span class="preprocessor"># ./install.sh   运行install.sh</span></span><br></pre></td></tr></table></figure>
+<p>以下是几个输入的地方:</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(en/br/cn/de/el/es/fr/hu/<span class="keyword">it</span>/jp/nl/pl/ru/sr/tr) [en]: en  <span class="comment">#使用英文安装的方式</span></span><br><span class="line">What kind <span class="keyword">of</span> installation do you want (server, agent, <span class="keyword">local</span>, hybrid <span class="keyword">or</span> help)? agent   <span class="comment">#安装的类型</span></span><br><span class="line">Choose <span class="keyword">where</span> <span class="keyword">to</span> install <span class="keyword">the</span> OSSEC HIDS [/var/ossec]:   <span class="comment">#安装的路径  默认就行  直接回车</span></span><br><span class="line">What's <span class="keyword">the</span> IP Address <span class="keyword">or</span> hostname <span class="keyword">of</span> <span class="keyword">the</span> OSSEC HIDS server?: <span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span>  <span class="comment">#输入你服务端的地址</span></span><br><span class="line">Do you want <span class="keyword">to</span> <span class="command">run</span> <span class="keyword">the</span> integrity check daemon? (y/n) [y]:  <span class="comment">#默认回车 </span></span><br><span class="line">Do you want <span class="keyword">to</span> <span class="command">run</span> <span class="keyword">the</span> rootkit detection engine? (y/n) [y]: <span class="comment">#rootkit 检查  默认回车</span></span><br><span class="line">Do you want <span class="keyword">to</span> enable active response? (y/n) [y]: <span class="comment">#默认回车</span></span><br></pre></td></tr></table></figure>
+<p>之后等待安装完毕</p>
+<ul>
+<li>回到ossim的操作界面(<code>https://192.168.31.111</code>) ,添加agent信息:</li>
+</ul>
+<p><img src="/images/ossim/1.png" alt="图片"></p>
+<blockquote>
+<p>注意:<br><strong>如果这里是安装win的客户端的话,添加的资产的系统类型一定要修改成win的,否则无法下载客户端</strong></p>
+</blockquote>
+<p>可以看到如下的结果,然后点击图中标示的位置,复制得到的key:</p>
+<p><img src="/images/ossim/2.png" alt="图片"></p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">key:</span><br><span class="line">MyBIb<span class="number">3</span><span class="label">N0</span>LTE<span class="number">5</span>Mi<span class="number">0</span>x<span class="label">NjgtMzEtOTcgMTkyLjE2</span>OC<span class="number">4</span>zMS<span class="number">45</span><span class="label">NyA5</span>YTBh<span class="number">0</span>OTFlZDQ<span class="number">2</span>ZTUwMmQ<span class="number">1</span>MWQ<span class="number">2</span>MGE<span class="number">3</span>YzA<span class="number">2</span><span class="label">NDgxZTIzZTIyOGUxZjIzNTJlM2</span>Fk<span class="title">M2</span>Fk<span class="label">NTkxYjNiY2</span>Fh</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在客户端的命令行执行<code>manage_agents</code>,按照提示输入key:</li>
+</ul>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /var/ossec/bin/manage_agents</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line"><span class="keyword">*</span> OSSEC HIDS v2.8 Agent manager.     <span class="keyword">*</span></span><br><span class="line"><span class="keyword">*</span> The following options are available: <span class="keyword">*</span></span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line">   (I)mport key from the server (I).</span><br><span class="line">   (Q)uit.</span><br><span class="line">Choose your action: I or Q: I     <span class="comment">#输入i</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">*</span> Provide the Key generated by the server.</span><br><span class="line"><span class="keyword">*</span> The best approach is to cut and paste it.</span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span> OBS: Do not include spaces or new lines.</span><br><span class="line"></span><br><span class="line">Paste it here (or '\q' to quit):   MyBIb3N0LTE5Mi0xNjgtMzEtOTcgMTkyLjE2OC4zMS45NyA5YTBhODA0OTFlZDQ2ZTUwMmQ1MWQ2MGE3YzA2NDgxZTIzZTIyOGUxZjIzNTJlM2FkM2FkNTk5NYjNiY2Fh    <span class="comment">#粘贴上key </span></span><br><span class="line"></span><br><span class="line">Agent information:</span><br><span class="line">   ID:3</span><br><span class="line">   Name:Host-192-168-31-97</span><br><span class="line">   IP Address:192.168.31.97</span><br><span class="line"></span><br><span class="line">Confirm adding it?(y/n): Y   <span class="comment">#确认信息</span></span><br><span class="line">Added.</span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span> Press ENTER to return to the main menu.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line"><span class="keyword">*</span> OSSEC HIDS v2.8 Agent manager.     <span class="keyword">*</span></span><br><span class="line"><span class="keyword">*</span> The following options are available: <span class="keyword">*</span></span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line">   (I)mport key from the server (I).</span><br><span class="line">   (Q)uit.</span><br><span class="line">Choose your action: I or Q: Q  <span class="comment">#输入q  退出</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span> You must restart OSSEC for your changes to take effect.</span><br><span class="line"></span><br><span class="line">manage_agents: Exiting ..</span><br></pre></td></tr></table></figure>
+<p>此时,已经完成了客户端的安装,过一段时间之后可以看到客户端的状态是<code>active</code>.</p>
+<hr>
+<h1 id="排错">排错</h1><p>整个安装的过程很简单,但是有些时候总是会出现各种问题:</p>
+<h2 id="问题1:怎么查看客户端的日志:">问题1:怎么查看客户端的日志:</h2><p>客户端日志的位置位于<code>/var/ossec/logs/ossec.log</code>,可以通过使用命令<code>tail -40f /var/ossec/logs/ossec.log</code>查看日志信息,在排错中会起到相当重要的作用.</p>
+<hr>
+<h2 id="问题2:为什么ossim制台一直显示agent是未连接(Disconnected)的状态:">问题2:为什么ossim制台一直显示agent是未连接(Disconnected)的状态:</h2><p>这个时候可以先查看下客户端的日志:<code>tail -40f /var/ossec/logs/ossec.log</code></p>
+<p>然后重启下客户端进程:<code>/var/ossec/bin/ossec-control restart</code></p>
+<p>查看下进程的状态:<code>/var/ossec/bin/ossec-control status</code></p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ossec-logcollector <span class="keyword">is</span> <span class="property">running</span>...</span><br><span class="line">ossec-syscheckd <span class="keyword">is</span> <span class="property">running</span>...</span><br><span class="line">ossec-agentd <span class="keyword">is</span> <span class="property">running</span>...</span><br><span class="line">ossec-execd <span class="keyword">is</span> <span class="property">running</span>...</span><br></pre></td></tr></table></figure>
+<p>如果都运行状态,表示已经成功启动服务,在看看上面的日志输出情况,如果可以正常连接服务器,则表示成功.</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">50</span>:<span class="number">56</span> ossec-agentd: INFO: Trying <span class="built_in">to</span> connect <span class="built_in">to</span> server (<span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span>:<span class="number">1514</span>).</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">50</span>:<span class="number">56</span> ossec-agentd: INFO: Using IPv4 <span class="keyword">for</span>: <span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span> .</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">50</span>:<span class="number">57</span> ossec-agentd(<span class="number">4102</span>): INFO: Connected <span class="built_in">to</span> <span class="operator">the</span> server (<span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span>:<span class="number">1514</span>).  <span class="comment">#成功连接</span></span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Started (pid: <span class="number">22595</span>).</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-rootcheck: INFO: Started (pid: <span class="number">22595</span>).</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Monitoring <span class="built_in">directory</span>: <span class="string">'/etc'</span>.</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Monitoring <span class="built_in">directory</span>: <span class="string">'/usr/bin'</span>.</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Monitoring <span class="built_in">directory</span>: <span class="string">'/usr/sbin'</span>.</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Monitoring <span class="built_in">directory</span>: <span class="string">'/bin'</span>.</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Monitoring <span class="built_in">directory</span>: <span class="string">'/sbin'</span>.</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Monitoring <span class="built_in">directory</span>: <span class="string">'/opt/cc.txt'</span>.</span><br><span class="line"><span class="number">2017</span>/<span class="number">01</span>/<span class="number">09</span> <span class="number">12</span>:<span class="number">51</span>:<span class="number">00</span> ossec-syscheckd: INFO: Directory <span class="built_in">set</span> <span class="keyword">for</span> real <span class="built_in">time</span> monitoring: <span class="string">'/opt/cc.txt'</span>.</span><br></pre></td></tr></table></figure>
+<p>还可以在ossim服务端通过命令行的方式来查看下已经有哪些agent连接上来:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">alienvault:~<span class="preprocessor"># /var/ossec/bin/agent_control -lc  #-lc 表示显示已经成功连接服务端的客户端列表</span></span><br><span class="line"></span><br><span class="line">OSSEC HIDS agent_control. List of available agents:</span><br><span class="line">   ID: <span class="number">000</span>, Name: alienvault (server), IP: <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>, Active/Local</span><br><span class="line">   ID: <span class="number">2</span>, Name: Host-<span class="number">192</span>-<span class="number">168</span>-<span class="number">31</span>-<span class="number">98</span>, IP: <span class="number">192.168</span><span class="number">.31</span><span class="number">.98</span>, Active</span><br><span class="line">   ID: <span class="number">3</span>, Name: Host-<span class="number">192</span>-<span class="number">168</span>-<span class="number">31</span>-<span class="number">97</span>, IP: <span class="number">192.168</span><span class="number">.31</span><span class="number">.97</span>, Active</span><br></pre></td></tr></table></figure>
+<p>还可以查看服务端的1514端口的流量信息,看看是否有日志传输过来<br><figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">ngrep</span> -q -d any <span class="foreign"><span class="keyword">port</span> 1514</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="问题3:通过命令/var/ossec/bin/agent_control_-lc_已经可以看到添加_agent是Active状态,但是ossim的控制台还是Disconnected,是怎么回事-">问题3:通过命令<code>/var/ossec/bin/agent_control -lc</code> 已经可以看到添加 agent是<code>Active</code>状态,但是ossim的控制台还是<code>Disconnected</code>,是怎么回事.</h2><p>这里貌似存在一定的延时,可以过一段时间在看看,另外可以通过以下方法来判断是否客户端真的连接到了服务端:</p>
+<ul>
+<li><p>1 运行<code>tail -40f /var/ossec/logs/ossec.log</code></p>
+</li>
+<li><p>2 在ossim的控制台点击:<code>restart agent</code></p>
+</li>
+</ul>
+<p><img src="/images/ossim/3.png" alt="图片"></p>
+<p>可以看到日志变化了,在你点击<code>restart agent</code>,日志中显示,客户端已经重新启动,载入你要监控的文件,就表示已经连接到了服务端,功能已经可以正常启用了.至于控制台的显示,那就是他的问题了 0.0</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">36</span> ossec-logcollector(<span class="number">1225</span>): <span class="string">INFO:</span> SIGNAL Received. Exit Cleaning...</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">36</span> ossec-syscheckd(<span class="number">1225</span>): <span class="string">INFO:</span> SIGNAL Received. Exit Cleaning...</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">36</span> ossec-agentd(<span class="number">1225</span>): <span class="string">INFO:</span> SIGNAL Received. Exit Cleaning...</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">36</span> ossec-execd(<span class="number">1314</span>): <span class="string">INFO:</span> Shutdown received. Deleting responses.</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">36</span> ossec-execd(<span class="number">1225</span>): <span class="string">INFO:</span> SIGNAL Received. Exit Cleaning...</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">execd:</span> <span class="string">INFO:</span> Started (<span class="string">pid:</span> <span class="number">22890</span>).</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">agentd:</span> <span class="string">INFO:</span> Using notify <span class="string">time:</span> <span class="number">600</span> and max time to <span class="string">reconnect:</span> <span class="number">1800</span></span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-agentd(<span class="number">1410</span>): <span class="string">INFO:</span> Reading authentication keys file.</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">agentd:</span> <span class="string">INFO:</span> Assigning counter <span class="keyword">for</span> agent Host-<span class="number">192</span>-<span class="number">168</span>-<span class="number">31</span>-<span class="number">97</span>: <span class="string">'2:2760'</span>.</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">agentd:</span> <span class="string">INFO:</span> Assigning sender <span class="string">counter:</span> <span class="number">54</span>:<span class="number">9664</span></span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">agentd:</span> <span class="string">INFO:</span> Started (<span class="string">pid:</span> <span class="number">22894</span>).</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">agentd:</span> <span class="string">INFO:</span> Server IP <span class="string">Address:</span> <span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span></span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">agentd:</span> <span class="string">INFO:</span> Trying to connect to server (<span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span>:<span class="number">1514</span>).</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">37</span> ossec-<span class="string">agentd:</span> <span class="string">INFO:</span> Using IPv4 <span class="string">for:</span> <span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span> .</span><br><span class="line"><span class="number">2017</span><span class="regexp">/01/</span><span class="number">09</span> <span class="number">13</span>:<span class="number">00</span>:<span class="number">38</span> ossec-agentd(<span class="number">4102</span>): <span class="string">INFO:</span> Connected to the server (<span class="number">192.168</span><span class="number">.31</span><span class="number">.111</span>:<span class="number">1514</span>).</span><br></pre></td></tr></table></figure>
+<h1 id="服务器命令">服务器命令</h1><p>这里还有一些服务器端的命令介绍:</p>
+<p><code>/var/ossec/bin/agent_control</code></p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">代理控制参数选项：</span><br><span class="line">-<span class="ruby">h                         显示帮助消息</span><br><span class="line"></span>-<span class="ruby">l                         列出所有可能的代理</span><br><span class="line"></span>-<span class="ruby">lc                        列出活动的代理</span><br><span class="line"></span>-<span class="ruby">i  &lt;agent_id&gt;     		   获取代理的相关信息 agent_id</span><br><span class="line"></span>-<span class="ruby">r                         运行代理中的integrity/rootcheck检查，要和-u或-a 一起使用。</span><br><span class="line"></span>-<span class="ruby">a                         对所有代理起做用</span><br><span class="line"></span>-<span class="ruby">u    &lt;agent_id&gt;     	   &lt;agent_id&gt;预先指定代理<span class="constant">ID</span>号</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>1 比如,上面已经提到的查看活动的代理:</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">alienvault:~<span class="preprocessor"># /var/ossec/bin/agent_control -lc</span></span><br><span class="line"></span><br><span class="line">OSSEC HIDS agent_control. List of available agents:</span><br><span class="line">   ID: <span class="number">000</span>, Name: alienvault (server), IP: <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>, Active/Local</span><br><span class="line">   ID: <span class="number">2</span>, Name: Host-<span class="number">192</span>-<span class="number">168</span>-<span class="number">31</span>-<span class="number">98</span>, IP: <span class="number">192.168</span><span class="number">.31</span><span class="number">.98</span>, Active</span><br><span class="line">   ID: <span class="number">3</span>, Name: Host-<span class="number">192</span>-<span class="number">168</span>-<span class="number">31</span>-<span class="number">97</span>, IP: <span class="number">192.168</span><span class="number">.31</span><span class="number">.97</span>, Active</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2 获取特定代理的信息:</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">alienvault:~<span class="preprocessor"># /var/ossec/bin/agent_control -i <span class="number">3</span></span></span><br><span class="line"></span><br><span class="line">OSSEC HIDS agent_control. Agent information:</span><br><span class="line">   Agent ID:   <span class="number">3</span></span><br><span class="line">   Agent Name: Host-<span class="number">192</span>-<span class="number">168</span>-<span class="number">31</span>-<span class="number">97</span></span><br><span class="line">   IP address: <span class="number">192.168</span><span class="number">.31</span><span class="number">.97</span></span><br><span class="line">   Status:     Active</span><br><span class="line"></span><br><span class="line">   Operating system:    Linux <span class="number">2.6</span><span class="number">.24</span>-<span class="number">16</span>-<span class="preprocessor">#<span class="number">1</span> SMP Thu Apr <span class="number">10</span> <span class="number">13.</span>.</span></span><br><span class="line">   Client version:      OSSEC HIDS v2<span class="number">.8</span></span><br><span class="line">   Last keep alive:     Mon Jan  <span class="number">9</span> <span class="number">13</span>:<span class="number">08</span>:<span class="number">46</span> <span class="number">2017</span></span><br><span class="line"></span><br><span class="line">   Syscheck last started  at: Mon Jan  <span class="number">9</span> <span class="number">12</span>:<span class="number">50</span>:<span class="number">11</span> <span class="number">2017</span></span><br><span class="line">   Rootcheck last started at: Mon Jan  <span class="number">9</span> <span class="number">08</span>:<span class="number">35</span>:<span class="number">02</span> <span class="number">2017</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>3 查看修改的文件的时间和权限:</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">alienvault:# /<span class="keyword">var</span>/ossec/bin/syscheck_control -i 3 </span><br><span class="line"></span><br><span class="line">Integrity changes <span class="keyword">for</span> agent 'Host-192-168-31-97 (3) - 192.168.31.97':</span><br><span class="line">Changes <span class="keyword">for</span> 2016 <span class="keyword">Dec</span> 15:</span><br><span class="line">2016 <span class="keyword">Dec</span> 15 12:34:30,0 - /etc/ossec-init.<span class="keyword">conf</span></span><br><span class="line">2016 <span class="keyword">Dec</span> 15 12:38:32,0 - /etc/init.<span class="keyword">d</span>/.depend.stop</span><br><span class="line">2016 <span class="keyword">Dec</span> 15 12:38:34,0 - /etc/init.<span class="keyword">d</span>/.depend.start</span><br><span class="line">2016 <span class="keyword">Dec</span> 15 12:47:56,0 - /etc/ossec-init.<span class="keyword">conf</span></span><br><span class="line">2016 <span class="keyword">Dec</span> 15 12:51:59,0 - /etc/init.<span class="keyword">d</span>/.depend.stop</span><br><span class="line">2016 <span class="keyword">Dec</span> 15 12:52:01,0 - /etc/init.<span class="keyword">d</span>/.depend.start</span><br></pre></td></tr></table></figure>
+<ul>
+<li>4 查看某被监控文件的信息</li>
+</ul>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">alienvault</span>:# /var/ossec/bin/syscheck_control -i <span class="number">3</span> -f /etc/ossec-init.conf</span><br><span class="line"></span><br><span class="line">Integrity changes for agent <span class="string">'Host-192-168-31-97 (3) - 192.168.31.97'</span>:</span><br><span class="line">Detailed information for entries <span class="attribute">matching</span>: <span class="string">'/etc/ossec-init.conf'</span></span><br><span class="line"></span><br><span class="line"><span class="number">2016</span> Dec <span class="number">15</span> <span class="number">12</span>:<span class="number">34</span>:<span class="number">30</span>,<span class="number">0</span> - /etc/ossec-init.conf</span><br><span class="line">File added to the database.</span><br><span class="line">Integrity checking <span class="attribute">values</span>:</span><br><span class="line">   <span class="attribute">Size</span>: <span class="number">101</span></span><br><span class="line">   <span class="attribute">Perm</span>: rw-------</span><br><span class="line">   <span class="attribute">Uid</span>:  <span class="number">0</span></span><br><span class="line">   <span class="attribute">Gid</span>:  <span class="number">0</span></span><br><span class="line">   <span class="attribute">Md5</span>:  d689f85738933f1a04a8b15ec1528262</span><br><span class="line">   <span class="attribute">Sha1</span>: a9339b82857a253826c234aaf6aaafc8e0876b6c</span><br></pre></td></tr></table></figure>
+<ul>
+<li>5 重新进行integrity/rootcheck检查</li>
+</ul>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alienvaul<span class="variable">t:</span>~# /var/ossec/bin/agent_control -<span class="keyword">r</span> -<span class="keyword">u</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line">OSSEC HIDS agent_contro<span class="variable">l:</span> Restarting Syscheck/Rootcheck <span class="keyword">on</span> agen<span class="variable">t:</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<p>执行完成之后,通过查看客户端的日志,也能看到重新检查的日志信息</p>
+<ul>
+<li>6 清除数据库</li>
+</ul>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/var/</span>ossec<span class="regexp">/bin/</span>syscheck_control -u <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>ossim安全交流群:46820390</p>
+</blockquote>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HawSkull</a></p>
+        <p><span>发布时间:</span>2016-01-09, 12:07:32</p>
+        <p><span>最后更新:</span>2016-01-09, 13:07:32</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/01/09/ossim_linux_agent/" title="OSSIM-HIDS for linux">http://r00to1.github.io/2016/01/09/ossim_linux_agent/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2016/01/09/ossim_linux_agent/　　作者: HawSkull" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2016/01/10/ossim-OTX-ACCOUNT/">
+                    OSSIM-OTX 账号申请流程
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2015/12/06/mac GourdScan /">
+                    mac搭建GourdScan
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#介绍"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装"><span class="toc-number">2.</span> <span class="toc-text">安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备"><span class="toc-number">2.1.</span> <span class="toc-text">准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装-1"><span class="toc-number">2.2.</span> <span class="toc-text">安装</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#排错"><span class="toc-number">3.</span> <span class="toc-text">排错</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题1:怎么查看客户端的日志:"><span class="toc-number">3.1.</span> <span class="toc-text">问题1:怎么查看客户端的日志:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题2:为什么ossim制台一直显示agent是未连接(Disconnected)的状态:"><span class="toc-number">3.2.</span> <span class="toc-text">问题2:为什么ossim制台一直显示agent是未连接(Disconnected)的状态:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题3:通过命令/var/ossec/bin/agent_control_-lc_已经可以看到添加_agent是Active状态,但是ossim的控制台还是Disconnected,是怎么回事-"><span class="toc-number">3.3.</span> <span class="toc-text">问题3:通过命令/var/ossec/bin/agent_control -lc 已经可以看到添加 agent是Active状态,但是ossim的控制台还是Disconnected,是怎么回事.</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#服务器命令"><span class="toc-number">4.</span> <span class="toc-text">服务器命令</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"OSSIM-HIDS for linux　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2016/01/09/ossim_linux_agent/" data-title="OSSIM-HIDS for linux" data-url="http://r00to1.github.io/2016/01/09/ossim_linux_agent/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2016/01/10/ossim-OTX-ACCOUNT/" title="上一篇: OSSIM-OTX 账号申请流程">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2015/12/06/mac GourdScan /" title="下一篇: mac搭建GourdScan">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2017 HawSkull
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>
