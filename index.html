@@ -216,7 +216,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ATTACK/">ATTACK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MS17-010/">MS17-010</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NSA/">NSA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WIN2K8/">WIN2K8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
                     </div>
                 </section>
                 
@@ -431,6 +431,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ATTACK/">ATTACK</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MS17-010/">MS17-010</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NSA/">NSA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WIN2K8/">WIN2K8</a></li></ul>
+    </div>
+
       
       <div class="clearfix"></div>
     </div>
@@ -559,6 +563,85 @@
 
 
   
+    <article id="post-scrapy" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/10/scrapy/" class="article-date">
+      <time datetime="2017-03-10T04:12:32.000Z" itemprop="datePublished">2017-03-10</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/10/scrapy/">scrapy学习记录</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <h2 id="介绍">介绍</h2><p>近期一直都有关注数据的采集方面的开发，之前也用Python(urllib+BeautifulSoup)写过“爬虫”但是效果不是很好，表现在内存占用过高和做出来的东西不够通用，很多周边的东西（图片下载、缩略图等）都需要自己来实现。</p>
+<h2 id="Scrapy_概述">Scrapy 概述</h2><blockquote>
+<p>Scrapy是一个为了爬取网站数据，提取结构性数据而编写的应用框架。 可以应用在包括数据挖掘，信息处理或存储历史数据等一系列的程序中。其最初是为了页面抓取 (更确切来说, 网络抓取 )所设计的， 也可以应用在获取API所返回的数据(例如 Amazon Associates Web Services ) 或者通用的网络爬虫。Scrapy用途广泛，可以用于数据挖掘、监测和自动化测试</p>
+</blockquote>
+<h2 id="Scrapy_架构">Scrapy 架构</h2><p>Scrapy 使用了 Twisted异步网络库来处理网络通讯。整体架构大致如下</p>
+<p><img src="/images/scrapy/crawler.png" alt="图片"></p>
+<p>绿线是数据流向，首先从初始 URL 开始，Scheduler 会将其交给 Downloader 进行下载，下载之后会交给 Spider 进行分析，Spider 分析出来的结果有两种：一种是需要进一步抓取的链接，例如之前分析的“下一页”的链接，这些东西会被传回 Scheduler ；另一种是需要保存的数据，它们则被送到 Item Pipeline 那里，那是对数据进行后期处理（详细分析、过滤、存储等）的地方。另外，在数据流动的通道里还可以安装各种中间件，进行必要的处理。</p>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2017/03/10/scrapy/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+<!--打赏代码-->
+
+	  
+<!--结束打赏-->
+
+	  
+
+
+
+
+
+
+
+
+
+
+
+
+  
     <article id="post-ossim_win_ossec_4771" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -604,6 +687,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/agent/">agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossec/">ossec</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossim/">ossim</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/win/">win</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2017/02/09/ossim_win_ossec_4771/#more">阅读全文 >></a>
@@ -673,6 +760,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/burp/">burp</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2017/02/09/burp1712/#more">阅读全文 >></a>
@@ -752,6 +843,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/agent/">agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/assets/">assets</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossim/">ossim</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2016/01/11/ossim-add-assets/#more">阅读全文 >></a>
@@ -826,6 +921,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OTX/">OTX</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossim/">ossim</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2016/01/10/ossim-OTX-ACCOUNT/#more">阅读全文 >></a>
@@ -904,6 +1003,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/agent/">agent</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossec/">ossec</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ossim/">ossim</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2016/01/09/ossim_linux_agent/#more">阅读全文 >></a>
@@ -978,6 +1081,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mac/">mac</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/12/06/mac GourdScan /#more">阅读全文 >></a>
@@ -1052,6 +1159,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/apache/">apache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/02/19/Mac Apache、PHP、Mysql /#more">阅读全文 >></a>
@@ -1121,6 +1232,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/burp/">burp</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/02/09/burp-sqlmap-tools/#more">阅读全文 >></a>
@@ -1195,6 +1310,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/30/1_Git/#more">阅读全文 >></a>
@@ -1271,6 +1390,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/29/2_Git/#more">阅读全文 >></a>
@@ -1347,6 +1470,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/28/3_Git/#more">阅读全文 >></a>
@@ -1422,6 +1549,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/27/4_Git/#more">阅读全文 >></a>
@@ -1497,6 +1628,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/26/5_Git/#more">阅读全文 >></a>
@@ -1573,6 +1708,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/25/6_Git/#more">阅读全文 >></a>
@@ -1649,6 +1788,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/24/7_Git/#more">阅读全文 >></a>
@@ -1727,6 +1870,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/23/8_Git/#more">阅读全文 >></a>
@@ -1802,6 +1949,10 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/22/9_Git/#more">阅读全文 >></a>
@@ -1877,82 +2028,13 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/指南/">指南</a></li></ul>
+    </div>
+
       
         <p class="article-more-link">
           <a href="/2015/01/21/10_Git/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-<!--打赏代码-->
-
-	  
-<!--结束打赏-->
-
-	  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Mongo-x" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/11/19/Mongo-x/" class="article-date">
-      <time datetime="2014-11-19T08:07:32.000Z" itemprop="datePublished">2014-11-19</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/19/Mongo-x/">Mongo-x</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h1 id="一、安装：">一、安装：</h1><p>下载：</p>
-<blockquote>
-<p><a href="https://www.mongodb.org/">https://www.mongodb.org/</a></p>
-</blockquote>
-<p><img src="/images/m1.jpg" alt="图片"><br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-      
-        <p class="article-more-link">
-          <a href="/2014/11/19/Mongo-x/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>

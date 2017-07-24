@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="哈哈髅" />
+
+
+
+<meta name="description" content="介绍近期一直都有关注数据的采集方面的开发，之前也用Python(urllib+BeautifulSoup)写过“爬虫”但是效果不是很好，表现在内存占用过高和做出来的东西不够通用，很多周边的东西（图片下载、缩略图等）都需要自己来实现。
+Scrapy 概述
+Scrapy是一个为了爬取网站数据，提取结构性数据而编写的应用框架。 可以应用在包括数据挖掘，信息处理或存储历史数据等一系列的程序中。其最初是为了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="scrapy学习记录">
+<meta property="og:url" content="http://r00to1.github.io/2017/03/10/scrapy/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="介绍近期一直都有关注数据的采集方面的开发，之前也用Python(urllib+BeautifulSoup)写过“爬虫”但是效果不是很好，表现在内存占用过高和做出来的东西不够通用，很多周边的东西（图片下载、缩略图等）都需要自己来实现。
+Scrapy 概述
+Scrapy是一个为了爬取网站数据，提取结构性数据而编写的应用框架。 可以应用在包括数据挖掘，信息处理或存储历史数据等一系列的程序中。其最初是为了">
+<meta property="og:image" content="http://r00to1.github.io/images/scrapy/crawler.png">
+<meta property="og:updated_time" content="2017-03-10T04:12:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="scrapy学习记录">
+<meta name="twitter:description" content="介绍近期一直都有关注数据的采集方面的开发，之前也用Python(urllib+BeautifulSoup)写过“爬虫”但是效果不是很好，表现在内存占用过高和做出来的东西不够通用，很多周边的东西（图片下载、缩略图等）都需要自己来实现。
+Scrapy 概述
+Scrapy是一个为了爬取网站数据，提取结构性数据而编写的应用框架。 可以应用在包括数据挖掘，信息处理或存储历史数据等一系列的程序中。其最初是为了">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>scrapy学习记录 | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">哈哈髅</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ATTACK/">ATTACK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MS17-010/">MS17-010</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NSA/">NSA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WIN2K8/">WIN2K8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">哈哈髅</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">哈哈髅</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-scrapy" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/10/scrapy/" class="article-date">
+      <time datetime="2017-03-10T04:12:32.000Z" itemprop="datePublished">2017-03-10</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      scrapy学习记录
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="介绍">介绍</h2><p>近期一直都有关注数据的采集方面的开发，之前也用Python(urllib+BeautifulSoup)写过“爬虫”但是效果不是很好，表现在内存占用过高和做出来的东西不够通用，很多周边的东西（图片下载、缩略图等）都需要自己来实现。</p>
+<h2 id="Scrapy_概述">Scrapy 概述</h2><blockquote>
+<p>Scrapy是一个为了爬取网站数据，提取结构性数据而编写的应用框架。 可以应用在包括数据挖掘，信息处理或存储历史数据等一系列的程序中。其最初是为了页面抓取 (更确切来说, 网络抓取 )所设计的， 也可以应用在获取API所返回的数据(例如 Amazon Associates Web Services ) 或者通用的网络爬虫。Scrapy用途广泛，可以用于数据挖掘、监测和自动化测试</p>
+</blockquote>
+<h2 id="Scrapy_架构">Scrapy 架构</h2><p>Scrapy 使用了 Twisted异步网络库来处理网络通讯。整体架构大致如下</p>
+<p><img src="/images/scrapy/crawler.png" alt="图片"></p>
+<p>绿线是数据流向，首先从初始 URL 开始，Scheduler 会将其交给 Downloader 进行下载，下载之后会交给 Spider 进行分析，Spider 分析出来的结果有两种：一种是需要进一步抓取的链接，例如之前分析的“下一页”的链接，这些东西会被传回 Scheduler ；另一种是需要保存的数据，它们则被送到 Item Pipeline 那里，那是对数据进行后期处理（详细分析、过滤、存储等）的地方。另外，在数据流动的通道里还可以安装各种中间件，进行必要的处理。</p>
+<a id="more"></a>
+<h2 id="Scrapy_组件">Scrapy 组件</h2><ul>
+<li>引擎(Scrapy): 用来处理整个系统的数据流处理, 触发事务(框架核心)</li>
+<li>调度器(Scheduler): 用来接受引擎发过来的请求, 压入队列中, 并在引擎再次请求的时候返回. 可以想像成一个URL（抓取网页的网址或者说是链接）的优先队列, 由它来决定下一个要抓取的网址是什么, 同时去除重复的网址</li>
+<li>下载器(Downloader): 用于下载网页内容, 并将网页内容返回给蜘蛛(Scrapy下载器是建立在twisted这个高效的异步模型上的)</li>
+<li>爬虫(Spiders): 爬虫是主要干活的, 用于从特定的网页中提取自己需要的信息, 即所谓的实体(Item)。用户也可以从中提取出链接,让Scrapy继续抓取下一个页面</li>
+<li>项目管道(Pipeline): 负责处理爬虫从网页中抽取的实体，主要的功能是持久化实体、验证实体的有效性、清除不需要的信息。当页面被爬虫解析后，将被发送到项目管道，并经过几个特定的次序处理数据。</li>
+<li>下载器中间件(Downloader Middlewares): 位于Scrapy引擎和下载器之间的框架，主要是处理Scrapy引擎与下载器之间的请求及响应。</li>
+<li>爬虫中间件(Spider Middlewares): 介于Scrapy引擎和爬虫之间的框架，主要工作是处理蜘蛛的响应输入和请求输出。</li>
+<li>调度中间件(Scheduler Middewares): 介于Scrapy引擎和调度之间的中间件，从Scrapy引擎发送到调度的请求和响应。</li>
+</ul>
+<h2 id="Scrapy_运行流程">Scrapy 运行流程</h2><p><em>1 引擎从调度器中取出一个链接(URL)用于接下来的抓取
+</em>2 引擎把URL封装成一个请求(Request)传给下载器，下载器把资源下载下来，并封装成应答包(Response)<br><em>3 爬虫解析Response
+</em>4 若是解析出实体（Item）,则交给实体管道进行进一步的处理;若是解析出的是链接（URL）,则把URL交给Scheduler等待抓取</p>
+<p>默认情况下，Scrapy使用 LIFO 队列来存储等待的请求。简单的说，就是 深度优先顺序 。如果想要 广度优先顺序 进行爬取，需要进行设定。</p>
+<h2 id="Scrapy_存在的问题">Scrapy 存在的问题</h2><p>爬虫是一个很依赖于网络io的应用，单机的处理能力有限，很快就变成瓶颈。而scrapy并不是一个分布式的设计，在需要大规模爬取的情况下就很成问题。当然可以通过修改Request队列来实现分布式爬取，而且工作量也不算特别大。</p>
+<ul>
+<li>scrapy的并行度不高。力图在爬虫里做一些计算性的操作就会影响抓取的速率。这主要是python里的线程机制造成的，因为Python使用了GIL(和Ruby一样)，多线程并不会带来太多速度上的提升(除非用Python的C扩展实现自己的模块，这样绕过了GIL)。Summary:Use Python threads if you need to run IO operations in parallel. Do not if you need to run computations in parallel.</li>
+<li>scrapy的内存消耗很快。可能是出于性能方面的考虑，pending requests并不是序列化存储在硬盘中，而是放在内存中的(毕竟IO很费时)，而且所有Request都放在内存中。你抓取到 百万网页的时候，考虑到单个网页时产生很多链接的，pending request很可能就近千万了，加上脚本语言里的对象本来就有额外成本，再考虑到GC不会立即释放内存，内存占用就相当可观了。</li>
+<li>归根到底，这两个问题是根植于语言之中的。</li>
+</ul>
+<h2 id="Scrapy_实例">Scrapy 实例</h2><h3 id="新建项目_(Project)">新建项目 (Project)</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">scrapy</span> startproject news_scrapy</span><br></pre></td></tr></table></figure>
+<p>输入以上命令之后，就会看见命令行运行的目录下多了一个名为 <code>news_scrapy</code>的目录，目录的结构如下：</p>
+<p>|—- news_scrapy<br>| |—- news_scrapy<br>|   |—- <strong>init</strong>.py<br>|   |—- items.py        #用来存储爬下来的数据结构（字典形式）<br>|    |—- pipelines.py    #用来对爬出来的item进行后续处理，如存入数据库等<br>|    |—- settings.py    #爬虫配置文件<br>|    |—- spiders        #此目录用来存放创建的新爬虫文件（爬虫主体）<br>|     |—- <strong>init</strong>.py<br>| |—- scrapy.cfg        #项目配置文件</p>
+<h3 id="定义目标（Items）">定义目标（Items）</h3><p>Items是装载抓取的数据的容器，工作方式像 python 里面的字典，但它提供更多的保护，比如对未定义的字段填充以防止拼写错误<br>通过创建scrapy.Item类, 并且定义类型为 scrapy.Field 的类属性来声明一个Item，通过将需要的item模型化，来控制站点数据。<br>编辑 items.py</p>
+<figure class="highlight monkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="preprocessor"><span class="keyword">import</span> scrapy</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewsScrapyItem</span>(<span class="title">scrapy</span>.<span class="title">Item</span>):</span><span class="preprocessor"></span><br><span class="line">    # define the fields for your item here like:</span></span><br><span class="line">    category = scrapy.<span class="keyword">Field</span>()</span><br><span class="line">    url = scrapy.<span class="keyword">Field</span>()</span><br><span class="line">    secondary_title = scrapy.<span class="keyword">Field</span>()</span><br><span class="line">    secondary_url = scrapy.<span class="keyword">Field</span>()<span class="preprocessor"></span><br><span class="line">    #text = Field()</span></span><br></pre></td></tr></table></figure>
+<h3 id="制作爬虫（Spider）">制作爬虫（Spider）</h3><p>Spider 定义了用于下载的URL列表、跟踪链接的方案、解析网页内容的方式，以此来提取items。<br>要建立一个Spider，你必须用scrapy.spider.BaseSpider创建一个子类，并确定三个强制的属性：</p>
+<ul>
+<li>name：爬虫的识别名称，必须是唯一的，在不同的爬虫中你必须定义不同的名字。</li>
+<li>start_urls：爬取的URL列表。爬虫从这里开始抓取数据，所以，第一次下载的数据将会从这些urls开始。其他子URL将会从这些起始URL中继承性生成。</li>
+<li>parse()：解析的方法，调用的时候传入从每一个URL传回的Response对象作为唯一参数，负责解析并匹配抓取的数据(解析为item)，跟踪更多的URL。<br>在 spiders 目录下新建 Wynews.py，代码如下。利用 yield Request(url=item[‘url’],meta={‘item_1’: item},callback=self.second_parse) 来进行第二层爬取。</li>
+</ul>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">class <span class="function"><span class="title">WynewsSpider</span><span class="params">(BaseSpider)</span></span>:</span><br><span class="line">    name = <span class="string">"Wynews"</span></span><br><span class="line">    start_urls = [<span class="string">'http://news.163.com/rank/'</span>]</span><br><span class="line"></span><br><span class="line">    def <span class="function"><span class="title">parse</span><span class="params">(self,response)</span></span>:</span><br><span class="line">        <span class="tag">html</span> = <span class="function"><span class="title">HtmlXPathSelector</span><span class="params">(response)</span></span></span><br><span class="line">        page = <span class="tag">html</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'//div[@class="subNav"]/a'</span>)</span></span></span><br><span class="line">        <span class="keyword">for</span> <span class="tag">i</span> <span class="keyword">in</span> page:</span><br><span class="line">            item = <span class="function"><span class="title">dict</span><span class="params">()</span></span></span><br><span class="line">            item[<span class="string">'category'</span>] = <span class="tag">i</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'text()'</span>)</span></span>.<span class="function"><span class="title">extract_first</span><span class="params">()</span></span></span><br><span class="line">            item[<span class="string">'url'</span>] = <span class="tag">i</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'@href'</span>)</span></span>.<span class="function"><span class="title">extract_first</span><span class="params">()</span></span></span><br><span class="line">            print item[<span class="string">'category'</span>],item[<span class="string">'url'</span>]</span><br><span class="line">            yield <span class="function"><span class="title">Request</span><span class="params">(url=item[<span class="string">'url'</span>],meta=&#123;<span class="string">'item_1'</span>: item&#125;,callback=self.second_parse)</span></span></span><br><span class="line"></span><br><span class="line">    def <span class="function"><span class="title">second_parse</span><span class="params">(self,response)</span></span>:</span><br><span class="line">        item_1= response<span class="class">.meta</span>[<span class="string">'item_1'</span>]</span><br><span class="line">        <span class="tag">html</span> = <span class="function"><span class="title">HtmlXPathSelector</span><span class="params">(response)</span></span></span><br><span class="line">        <span class="id">#print</span> <span class="string">'response '</span>,response</span><br><span class="line">        page = <span class="tag">html</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'//tr/td/a'</span>)</span></span></span><br><span class="line">        <span class="id">#print</span> <span class="string">'page '</span>,page</span><br><span class="line">        items = []</span><br><span class="line">        <span class="keyword">for</span> <span class="tag">i</span> <span class="keyword">in</span> page:</span><br><span class="line">            item = <span class="function"><span class="title">DidiScrapyItem</span><span class="params">()</span></span></span><br><span class="line">            item[<span class="string">'category'</span>] = item_1[<span class="string">'category'</span>].<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf8'</span>)</span></span></span><br><span class="line">            item[<span class="string">'url'</span>] = item_1[<span class="string">'url'</span>].<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf8'</span>)</span></span></span><br><span class="line">            item[<span class="string">'secondary_title'</span>] = <span class="tag">i</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'text()'</span>)</span></span>.<span class="function"><span class="title">extract_first</span><span class="params">()</span></span>.<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf8'</span>)</span></span></span><br><span class="line">            item[<span class="string">'secondary_url'</span>] = <span class="tag">i</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'@href'</span>)</span></span>.<span class="function"><span class="title">extract_first</span><span class="params">()</span></span>.<span class="function"><span class="title">encode</span><span class="params">(<span class="string">'utf8'</span>)</span></span></span><br><span class="line">            <span class="id">#print</span> <span class="tag">i</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'text()'</span>)</span></span>.<span class="function"><span class="title">extract</span><span class="params">()</span></span>,<span class="tag">i</span>.<span class="function"><span class="title">xpath</span><span class="params">(<span class="string">'@href'</span>)</span></span>.<span class="function"><span class="title">extract</span><span class="params">()</span></span></span><br><span class="line">            items.<span class="function"><span class="title">append</span><span class="params">(item)</span></span></span><br><span class="line">        return items</span><br></pre></td></tr></table></figure>
+<h3 id="存储结果（Pipeline）">存储结果（Pipeline）</h3><p>Item pipeline 的主要责任是负责处理 spider 抽取的 Item，主要任务是清理、验证和存储数据。当页面被 spider 解析后，将被发送到 pipeline，每个 pipeline 的组件都是由一个简单的方法组成的Python类。pipeline 获取Item，执行相应的方法，并确定是否需要在 pipeline中继续执行下一步或是直接丢弃掉不处理。</p>
+<h3 id="执行过程">执行过程</h3><ul>
+<li>清理HTML数据</li>
+<li>验证解析到的数据（检查Item是否包含必要的字段）</li>
+<li>检查是否是重复数据（如果重复就删除）</li>
+<li>将解析到的数据存储到 数据库/文件中</li>
+</ul>
+<h3 id="主要方法">主要方法</h3><ul>
+<li><p>process_item(item, spider)<br>每一个item管道组件都会调用该方法，并且必须返回一个item对象实例或raise DropItem异常。<br>被丢掉的item将不会在管道组件进行执行</p>
+</li>
+<li><p>open_spider(spider)<br>当spider执行的时候将调用该方法</p>
+</li>
+<li><p>close_spider(spider)<br>当spider关闭的时候将调用该方法</p>
+</li>
+</ul>
+<h3 id="编写自己的_Pipeline">编写自己的 Pipeline</h3><p>编辑 pipelines.py。把抓取的 items 保存到 json 文件中。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewsScrapyPipeline</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.file = open(<span class="string">'items.json'</span>, <span class="string">'w'</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_item</span><span class="params">(self, item, spider)</span>:</span></span><br><span class="line">        line = json.dumps(dict(item),ensure_ascii=<span class="keyword">False</span>) + <span class="string">"\n"</span></span><br><span class="line">        self.file.write(line)</span><br><span class="line">        <span class="keyword">return</span> item</span><br></pre></td></tr></table></figure></p>
+<p>另外，如果不考虑编码（没有中文），可以在运行爬虫的时候直接通过下面的命令导出结果。</p>
+<p>dump到JSON文件:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">scrapy</span> <span class="tag">crawl</span> <span class="tag">myspider</span> <span class="tag">-o</span> <span class="tag">items</span><span class="class">.json</span></span><br></pre></td></tr></table></figure></p>
+<p>dump到CSV文件:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">scrapy</span> <span class="tag">crawl</span> <span class="tag">myspider</span> <span class="tag">-o</span> <span class="tag">items</span><span class="class">.csv</span></span><br></pre></td></tr></table></figure></p>
+<p>dump到XML文件:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">scrapy</span> <span class="tag">crawl</span> <span class="tag">myspider</span> <span class="tag">-o</span> <span class="tag">items</span><span class="class">.xml</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="激活Item_Pipeline组件">激活Item Pipeline组件</h3><p>在settings.py文件中，往ITEM_PIPELINES中添加项目管道的类名，激活项目管道组件<br><figure class="highlight roboconf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="component">ITEM_PIPELINES = &#123;</span><br><span class="line">    'news_scrapy<span class="string">.pipelines.NewsScrapyPipeline':</span> 300,</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="开启爬虫_(Crawl)">开启爬虫 (Crawl)</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">scrapy</span> crawl Wynews</span><br></pre></td></tr></table></figure>
+<h3 id="可能出现的问题_(Problem)">可能出现的问题 (Problem)</h3><p>打开 items.json 文件，中文可能会出现文件乱码问题<br><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="special">[</span><span class="special">&#123;</span>"category": "<span class="command">\u</span>93c2<span class="command">\u</span>4f34<span class="command">\u</span>6908", "url": "http://news.163.com/special/0001386F/rank_news.html", "secondary_title": "<span class="command">\u</span>934b<span class="command">\u</span>950b<span class="command">\u</span>9422<span class="command">\u</span>5cf0<span class="command">\u</span>30b3<span class="command">\u</span>95c3<span class="command">\u</span>8e6d<span class="command">\u</span>7b09<span class="command">\u</span>9473<span class="command">\u</span>6ec8<span class="command">\u</span>69fb<span class="command">\u</span>951b<span class="command">\u</span>5c7e<span class="command">\u</span>5d0f<span class="command">\u</span>6fc2<span class="command">\u</span>7a3f<span class="command">\u</span>5dfb<span class="command">\u</span>9359<span class="command">\u</span>53c9<span class="command">\u</span>7c2e<span class="command">\u</span>6769<span class="command">\u</span>6ec4<span class="command">\u</span>7966<span class="command">\u</span>95c0", "secondary_url": "http://caozhi.news.163.com/16/0615/09/BPJG6SB60001544E.html"<span class="special">&#125;</span>,</span><br></pre></td></tr></table></figure></p>
+<p>这一行代码就能解决。<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">line = json.<span class="function"><span class="title">dumps</span><span class="params">(dict(item)</span></span>,ensure_ascii=False) + <span class="string">"\n"</span></span><br></pre></td></tr></table></figure></p>
+<p>结果</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"A股闯关MSCI再度失败 索罗斯们押注对冲胜出"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/06/BPJ4T69300253B0H.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"湖北副省长担心房价下跌：泡沫若破裂后果很严重"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/08/BPJBM36U00252G50.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"马云:假货质量超过正品 打假很复杂"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/08/BPJAIOVI00253G87.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"A股闯关未成功 纳入MSCI新兴市场指数被延迟"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/07/BPJ7260D00252G50.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"马云称许多假货比真品好 网友:怪不得淘宝假货多"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/08/BPJC437N002526O3.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"贪官示意家人低价买地 拆迁后获赔近亿元"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/08/BPJAT58400252G50.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"又是毒胶囊:浙江查获1亿多粒毒胶囊 6人被捕"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/07/BPJ8NMRG00253B0H.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"还不起了？委内瑞拉寻求宽限1年偿还中国贷款"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/07/BPJ9IH3400252C1E.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"财经"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://money.163.com/special/002526BH/rank.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"A股频现清仓式减持 上半年十大减持王曝光"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://money.163.com/16/0615/07/BPJ7Q9BC00254IU4.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"汽车"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://news.163.com/special/0001386F/rank_auto.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"《装X购车指南》 30-50万都能买到啥车？"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://auto.163.com/16/0615/07/BPJ6U1J900084TUP.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"汽车"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://news.163.com/special/0001386F/rank_auto.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"看挡杆还以为是A8L 新款哈弗H9内饰曝光"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://auto.163.com/16/0615/00/BPIGTP4B00084TUO.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"汽车"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://news.163.com/special/0001386F/rank_auto.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"前脸/尾灯有变 新款捷达搭1.5L油耗更低"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://auto.163.com/16/0615/00/BPIGMEHE00084TUO.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"汽车"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://news.163.com/special/0001386F/rank_auto.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"主打车型不超10万良心价 远景SUV将8月上市"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://auto.163.com/16/0615/00/BPIHR2A500084TUO.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"汽车"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://news.163.com/special/0001386F/rank_auto.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"Macan并不是我真姓 众泰SR8搭2.0T/D"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://auto.163.com/16/0613/00/BPDBPB0J00084TUO.html"</span></span>&#125;</span><br><span class="line">&#123;"<span class="attribute">category</span>": <span class="value"><span class="string">"汽车"</span></span>, "<span class="attribute">url</span>": <span class="value"><span class="string">"http://news.163.com/special/0001386F/rank_auto.html"</span></span>, "<span class="attribute">secondary_title</span>": <span class="value"><span class="string">"上海福特翼搏优惠1.5万元"</span></span>, "<span class="attribute">secondary_url</span>": <span class="value"><span class="string">"http://auto.163.com/16/0615/00/BPIHH8FF000857M6.html"</span></span>&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="添加命令行参数">添加命令行参数</h3><p>第一种方法，在命令行用crawl控制spider爬取的时候，加上-a选项，如<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl WangyiSpider -<span class="tag">a</span> category=打车</span><br></pre></td></tr></table></figure></p>
+<p>然后在 spider 的构造函数里加上带入的参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WangyiSpider</span><span class="params">(BaseSpider)</span>:</span></span><br><span class="line">    name = <span class="string">"Wangyi"</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, category=None, *args, **kwargs)</span>:</span></span><br><span class="line">        super(WangyiSpider, self).__init__(*args, **kwargs)</span><br><span class="line">        self.base_url = <span class="string">'http://news.yodao.com/'</span></span><br><span class="line">        self.start_urls = [<span class="string">'http://news.yodao.com/search?q='</span> +</span><br><span class="line">                           category]</span><br></pre></td></tr></table></figure>
+<p>默认情况当你每次执行scrapy crawl命令时会创建一个新的进程。但我们可以使用核心API在同一个进程中同时运行多个spider，如下，在 settings.py 的同级目录下编辑 run.py，导入编写的 spider 类如 JingdongSpider, SuningSpider。</p>
+<h2 id="Scrapy_调优">Scrapy 调优</h2><h3 id="提高并发能力">提高并发能力</h3><h4 id="增加并发">增加并发</h4><p>并发是指同时处理的request的数量。其有全局限制和局部(每个网站)的限制。Scrapy 默认的全局并发限制(16)对同时爬取大量网站的情况并不适用，因此需要增加这个值。 增加多少取决于爬虫能占用多少CPU。 一般开始可以设置为 100 。不过最好的方式是做一些测试，获得 Scrapy 进程占取CPU与并发数的关系。选择一个能使CPU占用率在80%-90%的并发数比较恰当。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor"># 增加全局并发数</span></span><br><span class="line">CONCURRENT_REQUESTS = <span class="number">100</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="降低log级别">降低log级别</h4><p>为了减少CPU使用率(及记录log存储的要求), 当调试程序完毕后，可以不使用 DEBUG log级别。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置Log级别:</span></span><br><span class="line"><span class="setting">LOG_LEVEL = <span class="value"><span class="string">'INFO'</span></span></span></span><br></pre></td></tr></table></figure></p>
+<h4 id="禁止cookies">禁止cookies</h4><p>禁止cookies能减少CPU使用率及Scrapy爬虫在内存中记录的踪迹，提高性能。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 禁止cookies:</span></span><br><span class="line"><span class="setting">COOKIES_ENABLED = <span class="value"><span class="keyword">False</span></span></span></span><br></pre></td></tr></table></figure></p>
+<h4 id="禁止重试">禁止重试</h4><p>对失败的HTTP请求进行重试会减慢爬取的效率，尤其是当站点响应很慢(甚至失败)时， 访问这样的站点会造成超时并重试多次。这是不必要的，同时也占用了爬虫爬取其他站点的能力。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 禁止重试:</span></span><br><span class="line"><span class="setting">RETRY_ENABLED = <span class="value"><span class="keyword">False</span></span></span></span><br></pre></td></tr></table></figure></p>
+<h4 id="减小下载超时">减小下载超时</h4><p>对一个非常慢的连接进行爬取(一般对通用爬虫来说并不重要)， 减小下载超时能让卡住的连接能被快速的放弃并解放处理其他站点的能力。<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 减小下载超时:</span></span><br><span class="line">DOWNLOAD_TIMEOUT = <span class="number">15</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 可能会引发的错误</span></span><br><span class="line">TimeoutError: <span class="keyword">User</span> <span class="title">timeout</span> caused connection failure: Getting http://homea.people.com.cn/n1/<span class="number">2016</span>/<span class="number">0628</span>/c69176-<span class="number">28504657</span>.html took longer than <span class="number">15.0</span> seconds..</span><br></pre></td></tr></table></figure></p>
+<p>通过如上配置，我的爬虫每分钟响应的request是之前的4倍，然而值得注意的是，这些设置并不是在所有场景都适用，需要通过具体场景试验，具体问题具体分析。</p>
+<h4 id="避免被禁止(ban)">避免被禁止(ban)</h4><p>有些网站实现了特定的机制，以一定规则来避免被爬虫爬取。下面是些处理这些站点的建议(tips):</p>
+<ul>
+<li>使用user agent池，轮流选择之一来作为user agent。池中包含常见的浏览器的user agent(google一下一大堆)</li>
+<li>禁止cookies(参考 COOKIES_ENABLED)，有些站点会使用cookies来发现爬虫的轨迹。</li>
+<li>设置下载延迟(2或更高)。参考 DOWNLOAD_DELAY 设置。</li>
+<li>如果可行，使用 Google cache 来爬取数据，而不是直接访问站点。</li>
+<li>使用IP池。例如免费的 Tor项目 或付费服务(ProxyMesh)。</li>
+<li>使用高度分布式的下载器(downloader)来绕过禁止(ban)，就只需要专注分析处理页面。这样的例子有: Crawlera<br>如果仍然无法避免被ban，考虑商业支持.</li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/03/10/scrapy/">scrapy学习记录</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">哈哈髅</a></p>
+        <p><span>发布时间:</span>2017-03-10, 12:12:32</p>
+        <p><span>最后更新:</span>2017-03-10, 12:12:32</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/03/10/scrapy/" title="scrapy学习记录">http://r00to1.github.io/2017/03/10/scrapy/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2017/03/10/scrapy/　　作者: 哈哈髅" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/04/23/NSA-MS17-010/">
+                    NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/02/09/ossim_win_ossec_4771/">
+                    详解OSSIM-OSSEC WIN 4771 案例
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scrapy_概述"><span class="toc-number">2.</span> <span class="toc-text">Scrapy 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scrapy_架构"><span class="toc-number">3.</span> <span class="toc-text">Scrapy 架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scrapy_组件"><span class="toc-number">4.</span> <span class="toc-text">Scrapy 组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scrapy_运行流程"><span class="toc-number">5.</span> <span class="toc-text">Scrapy 运行流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scrapy_存在的问题"><span class="toc-number">6.</span> <span class="toc-text">Scrapy 存在的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scrapy_实例"><span class="toc-number">7.</span> <span class="toc-text">Scrapy 实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新建项目_(Project)"><span class="toc-number">7.1.</span> <span class="toc-text">新建项目 (Project)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#定义目标（Items）"><span class="toc-number">7.2.</span> <span class="toc-text">定义目标（Items）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#制作爬虫（Spider）"><span class="toc-number">7.3.</span> <span class="toc-text">制作爬虫（Spider）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存储结果（Pipeline）"><span class="toc-number">7.4.</span> <span class="toc-text">存储结果（Pipeline）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行过程"><span class="toc-number">7.5.</span> <span class="toc-text">执行过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要方法"><span class="toc-number">7.6.</span> <span class="toc-text">主要方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编写自己的_Pipeline"><span class="toc-number">7.7.</span> <span class="toc-text">编写自己的 Pipeline</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#激活Item_Pipeline组件"><span class="toc-number">7.8.</span> <span class="toc-text">激活Item Pipeline组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#开启爬虫_(Crawl)"><span class="toc-number">7.9.</span> <span class="toc-text">开启爬虫 (Crawl)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可能出现的问题_(Problem)"><span class="toc-number">7.10.</span> <span class="toc-text">可能出现的问题 (Problem)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#添加命令行参数"><span class="toc-number">7.11.</span> <span class="toc-text">添加命令行参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scrapy_调优"><span class="toc-number">8.</span> <span class="toc-text">Scrapy 调优</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#提高并发能力"><span class="toc-number">8.1.</span> <span class="toc-text">提高并发能力</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#增加并发"><span class="toc-number">8.1.1.</span> <span class="toc-text">增加并发</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#降低log级别"><span class="toc-number">8.1.2.</span> <span class="toc-text">降低log级别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#禁止cookies"><span class="toc-number">8.1.3.</span> <span class="toc-text">禁止cookies</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#禁止重试"><span class="toc-number">8.1.4.</span> <span class="toc-text">禁止重试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#减小下载超时"><span class="toc-number">8.1.5.</span> <span class="toc-text">减小下载超时</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#避免被禁止(ban)"><span class="toc-number">8.1.6.</span> <span class="toc-text">避免被禁止(ban)</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"scrapy学习记录　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2017/03/10/scrapy/" data-title="scrapy学习记录" data-url="http://r00to1.github.io/2017/03/10/scrapy/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/04/23/NSA-MS17-010/" title="上一篇: NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/02/09/ossim_win_ossec_4771/" title="下一篇: 详解OSSIM-OSSEC WIN 4771 案例">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/04/23/NSA-MS17-010/">NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/10/scrapy/">scrapy学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2017 哈哈髅
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>
