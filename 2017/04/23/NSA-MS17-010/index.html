@@ -379,6 +379,7 @@
 <p>影子经纪人（Shadow Brokers）最近陆续曝光的NSA网络武器令人震惊，尽管这些工具是否出自国家级别黑客团队之手尚不清楚，但至少存在一个可以说明问题的事实：这些漏洞利用工具都能有效运行，且具有一定程度的威胁杀伤力。在此，我用NSA的两个大杀器演示对Win 7和Windows  Server 2008系统进行漏洞利用和入侵控制的过程复现。</p>
 </blockquote>
 <p>本次shadowbroker放出的工具影响情况如下：<br><img src="/images/nsa/2.jpg" alt="图片"></p>
+<a id="more"></a>
 <h2 id="工具说明">工具说明</h2><h3 id="框架地址">框架地址</h3><p>附上框架条件的连接<a href="https://www.python.org/download/releases/2.6/" target="_blank" rel="external">Python 2.6</a>和老版本的<a href="https://sourceforge.net/projects/pywin32/files/pywin32/Build%20212/" target="_blank" rel="external">PyWin32</a> v2.12</p>
 <h3 id="整体目录介绍">整体目录介绍</h3><p>下载并且解压 <a href="https://github.com/x0rz/EQGRP_Lost_in_Translation" target="_blank" rel="external">EQGRP_Lost_in_Translation-master.zip</a>,总共包含三个目录：</p>
 <figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">windows</span>目录针对Windows操作系统的利用工具和相关攻击代码；</span><br><span class="line"></span><br><span class="line"><span class="keyword">swift目录中是包含入侵swift银行系统的操作记录等相关证据；</span><br><span class="line"></span></span><br><span class="line"><span class="label">oddjob</span>目录是后门Rootkit等相关文档；</span><br></pre></td></tr></table></figure>
