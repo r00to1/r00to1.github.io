@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="哈哈髅" />
+
+
+
+<meta name="description" content="介绍最近看到大佬发了几篇tpot蜜罐的文章，都是介绍安装的，那我就来写个看看怎么使用的文章，抛砖引玉，共同进步。我的蜜罐也是从16版本升级到17的，感觉没什么太大的变化，内网跑了一年多，还算有点效果，能发现一些恶意攻击行为，有的是病毒的行为，有些则是内网用户在探测。。。。
+
+https://www.freebuf.com/sectool/178998.htmlhttps://www.freebuf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="T-Pot多蜜罐平台之使用更简单">
+<meta property="og:url" content="http://r00to1.github.io/2018/11/12/tpot-docker/index.html">
+<meta property="og:site_name" content="HawSkull's Blog">
+<meta property="og:description" content="介绍最近看到大佬发了几篇tpot蜜罐的文章，都是介绍安装的，那我就来写个看看怎么使用的文章，抛砖引玉，共同进步。我的蜜罐也是从16版本升级到17的，感觉没什么太大的变化，内网跑了一年多，还算有点效果，能发现一些恶意攻击行为，有的是病毒的行为，有些则是内网用户在探测。。。。
+
+https://www.freebuf.com/sectool/178998.htmlhttps://www.freebuf">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/1.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/2.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/2-1.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/3.jpg">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/4.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/5.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/6.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/7.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/8.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/9.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/10.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/10-1.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/10-2.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/12.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/12-1.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/12-2.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/13.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/14.png">
+<meta property="og:image" content="http://r00to1.github.io/images/tpot/16.png">
+<meta property="og:updated_time" content="2018-11-12T04:12:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="T-Pot多蜜罐平台之使用更简单">
+<meta name="twitter:description" content="介绍最近看到大佬发了几篇tpot蜜罐的文章，都是介绍安装的，那我就来写个看看怎么使用的文章，抛砖引玉，共同进步。我的蜜罐也是从16版本升级到17的，感觉没什么太大的变化，内网跑了一年多，还算有点效果，能发现一些恶意攻击行为，有的是病毒的行为，有些则是内网用户在探测。。。。
+
+https://www.freebuf.com/sectool/178998.htmlhttps://www.freebuf">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="HawSkull&#39;s Blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>T-Pot多蜜罐平台之使用更简单 | HawSkull&#39;s Blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">哈哈髅</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACCOUNT/">ACCOUNT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ATTACK/">ATTACK</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Burp-Suite/">Burp Suite</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MS17-010/">MS17-010</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NSA/">NSA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OTX/">OTX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WIN2K8/">WIN2K8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/agent/">agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/apache/">apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/assets/">assets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backup/">backup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/burp/">burp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gourdscan/">gourdscan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/">mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mp3/">mp3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossec/">ossec</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ossim/">ossim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/stu/">stu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tpot/">tpot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/win/">win</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/指南/">指南</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/蜜罐/">蜜罐</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://sosec.cc">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">我就是我不一样的烟火。。。</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">哈哈髅</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">哈哈髅</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Walk steps step by step!(哈哈髅)</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:shuaxin2012@hotmail.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="/#" title="GitHub"></a>
+                            
+                                <a class="fa V2EX" target="_blank" href="/#" title="V2EX"></a>
+                            
+                                <a class="fa 知乎" target="_blank" href="/zhihu" title="知乎"></a>
+                            
+                                <a class="fa 豆瓣" target="_blank" href="/douban" title="豆瓣"></a>
+                            
+                                <a class="fa SegmentFault" target="_blank" href="/" title="SegmentFault"></a>
+                            
+                                <a class="fa 博客园" target="_blank" href="/cnblogs" title="博客园"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="/" title="CSDN"></a>
+                            
+                                <a class="fa Coding" target="_blank" href="/" title="Coding"></a>
+                            
+                                <a class="fa Google" target="_blank" href="/#" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="/#" title="Twitter"></a>
+                            
+                                <a class="fa QQ" target="_blank" href="/#" title="QQ"></a>
+                            
+                                <a class="fa 微信" target="_blank" href="/Wechat" title="微信"></a>
+                            
+                                <a class="fa PayPal" target="_blank" href="/#" title="PayPal"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-tpot-docker" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/11/12/tpot-docker/" class="article-date">
+      <time datetime="2018-11-12T04:12:32.000Z" itemprop="datePublished">2018-11-12</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      T-Pot多蜜罐平台之使用更简单
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tpot/">tpot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/蜜罐/">蜜罐</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="介绍">介绍</h2><p>最近看到大佬发了几篇tpot蜜罐的文章，都是介绍安装的，那我就来写个看看怎么使用的文章，抛砖引玉，共同进步。<br>我的蜜罐也是从16版本升级到17的，感觉没什么太大的变化，内网跑了一年多，还算有点效果，能发现一些恶意攻击行为，有的是病毒的行为，有些则是内网用户在探测。。。。</p>
+<blockquote>
+<p><a href="https://www.freebuf.com/sectool/178998.html" target="_blank" rel="external">https://www.freebuf.com/sectool/178998.html</a><br><a href="https://www.freebuf.com/sectool/134504.html" target="_blank" rel="external">https://www.freebuf.com/sectool/134504.html</a></p>
+</blockquote>
+<h2 id="概述">概述</h2><blockquote>
+<p>项目地址：<a href="https://github.com/dtag-dev-sec/tpotce" target="_blank" rel="external">https://github.com/dtag-dev-sec/tpotce</a></p>
+</blockquote>
+<p><img src="/images/tpot/1.png" alt="图片"></p>
+<hr>
+<h2 id="蜜罐类型">蜜罐类型</h2><p>Conpot: 低交互工控蜜罐，提供一系列通用工业控制协议, 能够模拟复杂的工控基础设施。</p>
+<p>Cowrie: 基于kippo更改的中交互ssh蜜罐, 可以对暴力攻击账号密码等记录，并提供伪造的文件系统环境记录黑客操作行为, 并保存通过wget/curl下载的文件以及通过SFTP、SCP上传的文件。</p>
+<p>Dionaea: Dionaea是运行于Linux上的一个应用程序，将程序运行于网络环境下，它开放Internet常见服务的默认端口，当有外来连接时，模拟正常服务给予反馈，同时记录下出入网络数据流。网络数据流经由检测模块检测后按类别进行处理，如果有 shellcode 则进行仿真执行；程序会自动下载 shellcode 中指定或后续攻击命令指定下载的恶意文件。</p>
+<p>Elasticpot: 模拟elastcisearch RCE漏洞的蜜罐，通过伪造函数在/,/_search, /_nodes的请求上回应脆弱ES实例的JSON格式消息。</p>
+<a id="more"></a>
+<p>Emobility: 在T-Pot中使用的高交互蜜罐容器， 旨在收集针对下一代交通基础设施的攻击动机和方法。Emobility蜜网包含一个中央收费系统，几个收费点，模拟用户的事务。一旦攻击者访问中控系统web界面，监控并处理运行收费交易，并与收费点交互。除此之外，在随机时间，黑客可能与正在收取车辆费用的用户进行交互。</p>
+<p>Glastopf: 低交互型Web应用蜜罐, Glastopf蜜罐它能够模拟成千上万的web漏洞，针对攻击的不同攻击手段来回应攻击者，然后从对目标Web应用程序的攻击过程中收集数据。它的目标是针对自动化漏洞扫描/利用工具，通过对漏洞利用方式进行归类，针对某一类的利用方式返回对应的合理结果，以此实现低交互。</p>
+<p>Honeytrap: 观察针对TCP或UDP服务的攻击，作为一个守护程序模拟一些知名的服务，并能够分析攻击字符串，执行相应的下载文件指令。</p>
+<p>Conpot: 低交互工控蜜罐，提供一系列通用工业控制协议, 能够模拟复杂的工控基础设施。</p>
+<p>Cowrie: 基于kippo更改的中交互ssh蜜罐, 可以对暴力攻击账号密码等记录，并提供伪造的文件系统环境记录黑客操作行为, 并保存通过wget/curl下载的文件以及通过SFTP、SCP上传的文件。</p>
+<p>Dionaea: Dionaea是运行于Linux上的一个应用程序，将程序运行于网络环境下，它开放Internet常见服务的默认端口，当有外来连接时，模拟正常服务给予反馈，同时记录下出入网络数据流。网络数据流经由检测模块检测后按类别进行处理，如果有 shellcode 则进行仿真执行；程序会自动下载 shellcode 中指定或后续攻击命令指定下载的恶意文件。</p>
+<p>Elasticpot: 模拟elastcisearch RCE漏洞的蜜罐，通过伪造函数在/,/_search, /_nodes的请求上回应脆弱ES实例的JSON格式消息。</p>
+<p>Emobility: 在T-Pot中使用的高交互蜜罐容器， 旨在收集针对下一代交通基础设施的攻击动机和方法。Emobility蜜网包含一个中央收费系统，几个收费点，模拟用户的事务。一旦攻击者访问中控系统web界面，监控并处理运行收费交易，并与收费点交互。除此之外，在随机时间，黑客可能与正在收取车辆费用的用户进行交互。</p>
+<p>Glastopf: 低交互型Web应用蜜罐, Glastopf蜜罐它能够模拟成千上万的web漏洞，针对攻击的不同攻击手段来回应攻击者，然后从对目标Web应用程序的攻击过程中收集数据。它的目标是针对自动化漏洞扫描/利用工具，通过对漏洞利用方式进行归类，针对某一类的利用方式返回对应的合理结果，以此实现低交互。</p>
+<p>Honeytrap: 观察针对TCP或UDP服务的攻击，作为一个守护程序模拟一些知名的服务，并能够分析攻击字符串，执行相应的下载文件指令。</p>
+<hr>
+<h2 id="Tpot架构">Tpot架构</h2><p>tpot蜜罐是使用docker容器，利用docker-compose工具进行编排的。<br>我没有全版本安装，只是标准安装，涉及以下docker images：<br>文件位置：<code>/opt/tpot/etc/tpot.yml</code></p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br></pre></td><td class="code"><pre><span class="line">services:</span><br><span class="line"></span><br><span class="line"># Cowrie service</span><br><span class="line">  cowrie:</span><br><span class="line">    container_name: cowrie</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> cowrie_local</span><br><span class="line"></span>    cap_add:</span><br><span class="line">     -<span class="ruby"> <span class="constant">NET_BIND_SERVICE</span></span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"22:2222"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"23:2223"</span></span><br><span class="line"></span>    image: "dtagdevsec/cowrie:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/cowrie/<span class="symbol">downloads:</span>/home/cowrie/cowrie/dl</span><br><span class="line"></span>     -<span class="ruby"> /data/cowrie/<span class="symbol">keys:</span>/home/cowrie/cowrie/etc</span><br><span class="line"></span>     -<span class="ruby"> /data/cowrie/<span class="symbol">log:</span>/home/cowrie/cowrie/log</span><br><span class="line"></span>     -<span class="ruby"> /data/cowrie/log/<span class="symbol">tty:</span>/home/cowrie/cowrie/log/tty</span><br><span class="line"></span></span><br><span class="line"># Dionaea service</span><br><span class="line">  dionaea:</span><br><span class="line">    container_name: dionaea</span><br><span class="line">    stdin_open: true</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> dionaea_local</span><br><span class="line"></span>    cap_add:</span><br><span class="line">     -<span class="ruby"> <span class="constant">NET_BIND_SERVICE</span></span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"20:20"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"21:21"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"42:42"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"69:69/udp"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"8081:80"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"135:135"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"443:443"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"445:445"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"1433:1433"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"1723:1723"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"1883:1883"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"3306:3306"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"5060:5060"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"5060:5060/udp"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"5061:5061"</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"27017:27017"</span></span><br><span class="line"></span>    image: "dtagdevsec/dionaea:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/dionaea/roots/<span class="symbol">ftp:</span>/opt/dionaea/var/dionaea/roots/ftp</span><br><span class="line"></span>     -<span class="ruby"> /data/dionaea/roots/<span class="symbol">tftp:</span>/opt/dionaea/var/dionaea/roots/tftp</span><br><span class="line"></span>     -<span class="ruby"> /data/dionaea/roots/<span class="symbol">www:</span>/opt/dionaea/var/dionaea/roots/www</span><br><span class="line"></span>     -<span class="ruby"> /data/dionaea/roots/<span class="symbol">upnp:</span>/opt/dionaea/var/dionaea/roots/upnp</span><br><span class="line"></span>     -<span class="ruby"> /data/<span class="symbol">dionaea:</span>/opt/dionaea/var/dionaea</span><br><span class="line"></span>     -<span class="ruby"> /data/dionaea/<span class="symbol">binaries:</span>/opt/dionaea/var/dionaea/binaries</span><br><span class="line"></span>     -<span class="ruby"> /data/dionaea/<span class="symbol">log:</span>/opt/dionaea/var/log</span><br><span class="line"></span>     -<span class="ruby"> /data/dionaea/<span class="symbol">rtp:</span>/opt/dionaea/var/dionaea/rtp</span><br><span class="line"></span></span><br><span class="line"># Elasticpot service</span><br><span class="line">  elasticpot:</span><br><span class="line">    container_name: elasticpot</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> elasticpot_local</span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"9200:9200"</span></span><br><span class="line"></span>    image: "dtagdevsec/elasticpot:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/elasticpot/<span class="symbol">log:</span>/opt/<span class="constant">ElasticpotPY</span>/log</span><br><span class="line"></span></span><br><span class="line"># ELK services</span><br><span class="line">## Elasticsearch service</span><br><span class="line">  elasticsearch:</span><br><span class="line">    container_name: elasticsearch</span><br><span class="line">    restart: always</span><br><span class="line">    environment:</span><br><span class="line">     -<span class="ruby"> bootstrap.memory_lock=<span class="keyword">true</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="string">"ES_JAVA_OPTS=-Xms512m -Xmx512m"</span></span><br><span class="line"></span>    cap_add:</span><br><span class="line">     -<span class="ruby"> <span class="constant">IPC_LOCK</span></span><br><span class="line"></span>    ulimits:</span><br><span class="line">      memlock:</span><br><span class="line">        soft: -1</span><br><span class="line">        hard: -1</span><br><span class="line">      nofile:</span><br><span class="line">        soft: 65536</span><br><span class="line">        hard: 65536</span><br><span class="line">#    mem_limit: 2g</span><br><span class="line">    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"127.0.0.1:64298:9200"</span></span><br><span class="line"></span>    image: "dtagdevsec/elasticsearch:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /<span class="symbol">data:</span>/data</span><br><span class="line"></span></span><br><span class="line">## Kibana service</span><br><span class="line">  kibana:</span><br><span class="line">    container_name: kibana</span><br><span class="line">    restart: always</span><br><span class="line">    depends_on:</span><br><span class="line">      elasticsearch:</span><br><span class="line">        condition: service_healthy</span><br><span class="line">    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"127.0.0.1:64296:5601"</span></span><br><span class="line"></span>    image: "dtagdevsec/kibana:1710"</span><br><span class="line"></span><br><span class="line">## Logstash service</span><br><span class="line">  logstash:</span><br><span class="line">    container_name: logstash</span><br><span class="line">    restart: always</span><br><span class="line">    depends_on:</span><br><span class="line">      elasticsearch:</span><br><span class="line">        condition: service_healthy</span><br><span class="line">    env_file:</span><br><span class="line">     -<span class="ruby"> /opt/tpot/etc/compose/elk_environment</span><br><span class="line"></span>    image: "dtagdevsec/logstash:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /<span class="symbol">data:</span>/data</span><br><span class="line"></span>     -<span class="ruby"> /var/<span class="symbol">log:</span>/data/host/log</span><br><span class="line"></span></span><br><span class="line">## Elasticsearch-head service</span><br><span class="line">  head:</span><br><span class="line">    container_name: head</span><br><span class="line">    restart: always</span><br><span class="line">    depends_on:</span><br><span class="line">      elasticsearch:</span><br><span class="line">        condition: service_healthy</span><br><span class="line">    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"127.0.0.1:64302:9100"</span></span><br><span class="line"></span>    image: "dtagdevsec/head:1710"</span><br><span class="line"></span><br><span class="line"># Ewsposter service</span><br><span class="line">  ewsposter:</span><br><span class="line">    container_name: ewsposter</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> ewsposter_local</span><br><span class="line"></span>    env_file:</span><br><span class="line">     -<span class="ruby"> /opt/tpot/etc/compose/elk_environment</span><br><span class="line"></span>    image: "dtagdevsec/ewsposter:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /<span class="symbol">data:</span>/data</span><br><span class="line"></span>     -<span class="ruby"> /data/ews/conf/ews.<span class="symbol">ip:</span>/opt/ewsposter/ews.ip</span><br><span class="line"></span></span><br><span class="line"># Glastopf service</span><br><span class="line">  glastopf:</span><br><span class="line">    container_name: glastopf</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> glastopf_local</span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"80:80"</span></span><br><span class="line"></span>    image: "dtagdevsec/glastopf:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/glastopf/<span class="symbol">db:</span>/opt/glastopf/db</span><br><span class="line"></span>     -<span class="ruby"> /data/glastopf/<span class="symbol">log:</span>/opt/glastopf/log</span><br><span class="line"></span></span><br><span class="line"># Honeytrap service</span><br><span class="line">  honeytrap:</span><br><span class="line">    container_name: honeytrap</span><br><span class="line">    restart: always</span><br><span class="line">    network_mode: "host"</span><br><span class="line">    cap_add:</span><br><span class="line">     -<span class="ruby"> <span class="constant">NET_ADMIN</span></span><br><span class="line"></span>    image: "dtagdevsec/honeytrap:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/honeytrap/<span class="symbol">attacks:</span>/opt/honeytrap/var/attacks</span><br><span class="line"></span>     -<span class="ruby"> /data/honeytrap/<span class="symbol">downloads:</span>/opt/honeytrap/var/downloads</span><br><span class="line"></span>     -<span class="ruby"> /data/honeytrap/<span class="symbol">log:</span>/opt/honeytrap/var/log</span><br><span class="line"></span></span><br><span class="line"># Mailoney service</span><br><span class="line">  mailoney:</span><br><span class="line">    container_name: mailoney</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> mailoney_local</span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"25:2525"</span></span><br><span class="line"></span>    image: "dtagdevsec/mailoney:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/mailoney/<span class="symbol">log:</span>/opt/mailoney/logs</span><br><span class="line"></span></span><br><span class="line"># Netdata service</span><br><span class="line">  netdata:</span><br><span class="line">    container_name: netdata</span><br><span class="line">    restart: always</span><br><span class="line">    network_mode: "host"</span><br><span class="line">    depends_on:</span><br><span class="line">      elasticsearch:</span><br><span class="line">        condition: service_healthy</span><br><span class="line">    cap_add:</span><br><span class="line">     -<span class="ruby"> <span class="constant">SYS_PTRACE</span></span><br><span class="line"></span>    security_opt:</span><br><span class="line">     -<span class="ruby"> apparmor=unconfined</span><br><span class="line"></span>    image: "dtagdevsec/netdata:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /<span class="symbol">proc:</span>/host/<span class="symbol">proc:</span>ro</span><br><span class="line"></span>     -<span class="ruby"> /<span class="symbol">sys:</span>/host/<span class="symbol">sys:</span>ro</span><br><span class="line"></span>     -<span class="ruby"> /var/run/docker.<span class="symbol">sock:</span>/var/run/docker.sock</span><br><span class="line"></span></span><br><span class="line"># Rdpy service</span><br><span class="line">  rdpy:</span><br><span class="line">    container_name: rdpy</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> rdpy_local</span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"3389:3389"</span></span><br><span class="line"></span>    image: "dtagdevsec/rdpy:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/rdpy/<span class="symbol">log:</span>/var/log/rdpy</span><br><span class="line"></span></span><br><span class="line"># Spiderfoot service</span><br><span class="line">  spiderfoot:</span><br><span class="line">    container_name: spiderfoot</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> spiderfoot_local</span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"127.0.0.1:64303:8080"</span></span><br><span class="line"></span>    image: "dtagdevsec/spiderfoot:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/spiderfoot/spiderfoot.<span class="symbol">db:</span>/home/spiderfoot/spiderfoot.db</span><br><span class="line"></span></span><br><span class="line"># Ui-for-docker service</span><br><span class="line">  ui-for-docker:</span><br><span class="line">    container_name: ui-for-docker</span><br><span class="line">    command:  -H unix:///var/run/docker.sock --no-auth</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> ui-<span class="keyword">for</span>-docker_local</span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"127.0.0.1:64299:9000"</span></span><br><span class="line"></span>    image: "dtagdevsec/ui-for-docker:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /var/run/docker.<span class="symbol">sock:</span>/var/run/docker.sock</span><br><span class="line"></span></span><br><span class="line"># Suricata service</span><br><span class="line">  suricata:</span><br><span class="line">    container_name: suricata</span><br><span class="line">    restart: always</span><br><span class="line">    network_mode: "host"</span><br><span class="line">    cap_add:</span><br><span class="line">     -<span class="ruby"> <span class="constant">NET_ADMIN</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="constant">SYS_NICE</span></span><br><span class="line"></span>     -<span class="ruby"> <span class="constant">NET_RAW</span></span><br><span class="line"></span>    image: "dtagdevsec/suricata:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/suricata/<span class="symbol">log:</span>/var/log/suricata</span><br><span class="line"></span></span><br><span class="line"># P0f service</span><br><span class="line">  p0f:</span><br><span class="line">    container_name: p0f</span><br><span class="line">    restart: always</span><br><span class="line">    network_mode: "host"</span><br><span class="line">    image: "dtagdevsec/p0f:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/p0f/<span class="symbol">log:</span>/var/log/p0f</span><br><span class="line"></span></span><br><span class="line"># Vnclowpot service</span><br><span class="line">  vnclowpot:</span><br><span class="line">    container_name: vnclowpot</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     -<span class="ruby"> vnclowpot_local</span><br><span class="line"></span>    ports:</span><br><span class="line">     -<span class="ruby"> <span class="string">"5900:5900"</span></span><br><span class="line"></span>    image: "dtagdevsec/vnclowpot:1710"</span><br><span class="line">    volumes:</span><br><span class="line">     -<span class="ruby"> /data/vnclowpot/<span class="symbol">log:</span>/var/log/vnclowpot</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="Container">Container</h2><blockquote>
+<p>下面将按照网络隔离进行介绍各个Container的功能和作用:</p>
+</blockquote>
+<h3 id="etc_default">etc_default</h3><p>该网络下包含以下四个容器:<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">logstash</span></span><br><span class="line">kibana</span><br><span class="line">head</span><br><span class="line">elasticsearch</span><br></pre></td></tr></table></figure></p>
+<h4 id="ELK+Elasticsearch-head_service">ELK+Elasticsearch-head service</h4><p>其实这个不用多说，主要是收集各个<code>Docker Container</code>抓取到的日志，然后<code>logstash</code>处理，<code>Elasticsearch</code>存储，<code>kibana</code>展示结果,另外添加了一个head插件,可以查看索引的状态,<br>查看logstash的conf文件，即可知道各个日志的存放位置：</p>
+<p>logstash配置文件：<br><code>/etc/logstash/conf.d/logstash.conf</code><br>日志存放位置,将宿主机的/data目录映射到Docker Container中的/data：<br><code>/data</code></p>
+<p>这四个Docker Container使用etc_default的 Connected networks，从而保证他们之间的通信，像logstash的配置文件中直接写明：<br><figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="name">output</span> &#123;</span><br><span class="line">  elasticsearch &#123;</span><br><span class="line">    hosts =&gt; [<span class="string">"elasticsearch:9200"</span>]</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>另外老外做事真是严谨，无需对外映射的端口一律通过内部转发，比如Elasticsearch service的Docker Container的端口配置：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">ports</span>:</span><br><span class="line"><span class="tag">-</span> "127<span class="class">.0</span><span class="class">.0</span><span class="class">.1</span><span class="pseudo">:64298</span><span class="pseudo">:9200"</span></span><br></pre></td></tr></table></figure></p>
+<p>最后用nginx进行资源的整合显示，配置文件路径：</p>
+<p><code>/etc/nginx/sites-available/tpotweb.conf</code><br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### Kibana</span></span><br><span class="line"><span class="title">location</span> /kibana/ &#123;</span><br><span class="line">    <span class="title">proxy_pass</span> <span class="url">http://localhost:64296</span>;</span><br><span class="line">    <span class="title">rewrite</span> /kibana/(.*)$ /<span class="variable">$1</span> <span class="built_in">break</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">### ES</span></span><br><span class="line"><span class="title">location</span> /es/ &#123;</span><br><span class="line">    <span class="title">proxy_pass</span> <span class="url">http://localhost:64298/</span>;</span><br><span class="line">    <span class="title">rewrite</span> /es/(.*)$ /<span class="variable">$1</span> <span class="built_in">break</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">### head standalone</span></span><br><span class="line"><span class="title">location</span> /myhead/ &#123;</span><br><span class="line">    <span class="title">proxy_pass</span> <span class="url">http://localhost:64302/</span>;</span><br><span class="line">    <span class="title">rewrite</span> /myhead/(.*)$ /<span class="variable">$1</span> <span class="built_in">break</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">### portainer</span></span><br><span class="line"><span class="title">location</span> /ui &#123;</span><br><span class="line">    <span class="title">proxy_pass</span> <span class="url">http://127.0.0.1:64299</span>;</span><br><span class="line">    <span class="title">proxy_http_version</span> <span class="number">1</span>.<span class="number">1</span>;</span><br><span class="line">    <span class="title">proxy_set_header</span> Upgrade <span class="variable">$http_upgrade</span>;</span><br><span class="line">    <span class="title">proxy_set_header</span> Connection <span class="variable">$http_connection</span>;</span><br><span class="line">    <span class="title">proxy_set_header</span> Host <span class="variable">$host</span>;</span><br><span class="line">    <span class="title">proxy_redirect</span> <span class="built_in">off</span>;</span><br><span class="line">    <span class="title">rewrite</span> /ui/(.*)$ /<span class="variable">$1</span> <span class="built_in">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="etc_cowrie_local">etc_cowrie_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cowrie</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Cowrie是一款中度交互的SSH与Telnet蜜罐，用于记录攻击者的暴力破解攻击和shell交互。Cowrie由Michel Oosterhof开发。</p>
+</blockquote>
+<p>特性：</p>
+<p>部分有趣的特性：</p>
+<ul>
+<li>伪装的文件系统可增加/移除文件；完整的文件系统搭配有Debian 5.0；</li>
+<li>可增加文件内容，攻击者就能用cat命令查看如/etc/passwd等文件；系统中进包含最少的文件内容；</li>
+<li>会话日志记录在UML兼容格式中，便于重演；</li>
+<li>Cowrie保存文件，下载用wget/curl，或者为后续检查——上传采用SFTP和scp；</li>
+</ul>
+<p> Container 暴露的端口为:<br> <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2222</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">22</span></span><br><span class="line"><span class="number">2223</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">23</span></span><br></pre></td></tr></table></figure></p>
+<p>宿主机日志存放位置:<br><code>/data/cowrie/log/cowrie.json</code></p>
+<p>通过模拟攻击可以在Kibana中看到展示效果,比如攻击者的使用的用户名和密码等信息:</p>
+<p><img src="/images/tpot/2.png" alt="图片"><br><img src="/images/tpot/2-1.png" alt="图片"></p>
+<hr>
+<h3 id="etc_dionaea_local">etc_dionaea_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dionaea</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Dionaea是一款低交互式蜜罐，是Honeynet Project 的开源项目。Dionaea蜜罐的设计目的是诱捕恶意攻击，获取恶意攻击会话与恶意代码程序样本。它通过模拟各种常见服务，捕获对服务的攻击数据，记录攻击源和目标IP、端口、协议类型等信息，以及完整的网络会话过程，自动分析其中可能包含的shellcode及其中的函数调用和下载文件，并获取恶意程序。<br> Container 暴露了若干端口:</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">135</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">135</span></span><br><span class="line"><span class="number">1433</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">1433</span></span><br><span class="line"><span class="number">1723</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">1723</span></span><br><span class="line"><span class="number">1883</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">1883</span></span><br><span class="line"><span class="number">20</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">20</span></span><br><span class="line"><span class="number">21</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">21</span></span><br><span class="line"><span class="number">27017</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">27017</span></span><br><span class="line"><span class="number">3306</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">3306</span></span><br><span class="line"><span class="number">42</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">42</span></span><br><span class="line"><span class="number">443</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">443</span></span><br><span class="line"><span class="number">445</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">445</span></span><br><span class="line"><span class="number">5060</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">5060</span></span><br><span class="line"><span class="number">5060</span>/udp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">5060</span></span><br><span class="line"><span class="number">5061</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">5061</span></span><br><span class="line"><span class="number">69</span>/udp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">69</span></span><br><span class="line"><span class="number">80</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">8081</span></span><br></pre></td></tr></table></figure>
+<p>这里可以关注的信息比较多,比如内网如果存在勒索病毒可能会扫描445端口,并提交一些payload进行测试,或者3306数据库爆破等信息,通过Kibana可以查看:</p>
+<p><img src="/images/tpot/3.jpg" alt="图片"></p>
+<hr>
+<h3 id="etc_elasticpot_local">etc_elasticpot_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">elasticpot</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>elasticpot：模拟elastcisearch RCE漏洞的蜜罐，通过伪造函数在/,/search,/nodes的请求上回应脆弱ES实例的JSON格式消息。</p>
+</blockquote>
+<p>Container 暴露端口:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">9200</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">9200</span></span><br></pre></td></tr></table></figure></p>
+<p>可以详细的看到请求的url包含了什么:</p>
+<p><img src="/images/tpot/4.png" alt="图片"></p>
+<hr>
+<h3 id="etc_ewsposter_local">etc_ewsposter_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ewsposter</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>默认情况下，捕获的数据将提交给社区后端。此社区后端使用数据提供[Sicherheitstacho]（<a href="https://sicherheitstacho.eu。您可以通过删除#" target="_blank" rel="external">https://sicherheitstacho.eu。您可以通过删除#</a> Ewsposter servicefrom 来选择退出提交/opt/tpot/etc/tpot.yml：</p>
+</blockquote>
+<p>停止T-Pot服务： <code>systemctl stop tpot</code><br>删除Ewsposter服务： <code>vim /opt/tpot/etc/tpot.yml</code><br>删除以下行，保存并退出vi（:x!）：<br><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor"># Ewsposter service</span></span><br><span class="line">  ewsposter:</span><br><span class="line">    container_name: ewsposter</span><br><span class="line">    restart: always</span><br><span class="line">    networks:</span><br><span class="line">     - ewsposter_local</span><br><span class="line">    image: <span class="string">"dtagdevsec/ewsposter:1810"</span></span><br><span class="line">    volumes:</span><br><span class="line">     - /<span class="typedef"><span class="keyword">data</span>:/<span class="keyword">data</span></span></span><br><span class="line">     - /<span class="typedef"><span class="keyword">data</span>/ews/conf/ews.ip:/opt/ewsposter/ews.ip</span></span><br></pre></td></tr></table></figure></p>
+<p>启动T-Pot服务： <code>systemctl start tpot</code></p>
+<hr>
+<h3 id="etc_glastopf_local">etc_glastopf_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glastopf</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Glastopf是一款在开源社区非常不错的低交互式Web应用蜜罐软件，由于代码全部使用Python编写，能够在各种主流操作系统平台上进行广泛部署，同时它的安装和配置过程相对简单，方便研究者和安全兴趣爱好者使用。Glastopf蜜罐它能够模拟成千上万的web漏洞，针对攻击的不同攻击手段来回应攻击者，然后从对目标Web应用程序的攻击过程中收集数据。它的目标是针对自动化漏洞扫描/利用工具，通过对漏洞利用方式进行归类，针对某一类的利用方式返回对应的合理结果，以此实现低交互。</p>
+</blockquote>
+<p>Container 暴露端口:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">80</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">80</span></span><br></pre></td></tr></table></figure></p>
+<p>访问情况如下:</p>
+<p><img src="/images/tpot/5.png" alt="图片"><br>该结果使用awvs扫描得出的截图:<br><img src="/images/tpot/6.png" alt="图片"></p>
+<hr>
+<h3 id="etc_mailoney_local">etc_mailoney_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mailoney</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Mailoney 是一个 SMTP 蜜罐,作者写这个项目的时候只是为了学习python,哈哈.</p>
+</blockquote>
+<p>Container 暴露端口:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2525</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">25</span></span><br></pre></td></tr></table></figure></p>
+<p><code>mailoney.py</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">__author__ = '@awhitehatter'</span><br><span class="line">__version__ = '0.1'</span><br><span class="line"></span><br><span class="line">'''</span><br><span class="line">add some nice comments here</span><br><span class="line">'''</span><br><span class="line"></span><br><span class="line">import argparse</span><br><span class="line">import os</span><br><span class="line">import hpfeeds</span><br><span class="line">import modules.postfix_creds</span><br><span class="line">import modules.open_relay</span><br><span class="line">import modules.schizo_open_relay</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># parse the command line arguments to <span class="operator"><span class="keyword">set</span> the <span class="keyword">variables</span> <span class="keyword">for</span> the <span class="keyword">server</span></span><br><span class="line">parser = argparse.ArgumentParser(description=<span class="string">"Command line arguments"</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-i'</span>,<span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;ip address&gt;'</span>, <span class="keyword">default</span>=<span class="string">'0.0.0.0'</span>, <span class="keyword">help</span>=<span class="string">'The IP address to listen on'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-p'</span>,<span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;port&gt;'</span>,  <span class="keyword">default</span>=<span class="string">'25'</span>, <span class="keyword">help</span>=<span class="string">'The port to listen on'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-s'</span>,<span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'mailserver'</span>, <span class="keyword">default</span>=os.environ.<span class="keyword">get</span>(<span class="string">'MAILSERVER_NAME'</span>, <span class="keyword">None</span>), <span class="keyword">help</span>=<span class="string">'A Name that\'ll show up as the mail server name'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-t'</span>,<span class="keyword">action</span>=<span class="string">'store'</span>, choices=[<span class="string">'open_relay'</span>, <span class="string">'postfix_creds'</span>, <span class="string">'schizo_open_relay'</span>], <span class="keyword">required</span>=<span class="literal">True</span>, <span class="keyword">help</span>=<span class="string">'honeypot type'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-logpath'</span>,<span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;logpath&gt;'</span>,  <span class="keyword">default</span>=os.environ.<span class="keyword">get</span>(<span class="string">'LOGPATH'</span>), <span class="keyword">help</span>=<span class="string">'path for file logging'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-hpfserver'</span>, <span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;hpfeeds-server&gt;'</span>, <span class="keyword">default</span>=os.environ.<span class="keyword">get</span>(<span class="string">'HPFEEDS_SERVER'</span>, <span class="keyword">None</span>), <span class="keyword">help</span>=<span class="string">'HPFeeds Server'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-hpfport'</span>, <span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;hpfeeds-port&gt;'</span>, <span class="keyword">default</span>=os.environ.<span class="keyword">get</span>(<span class="string">'HPFEEDS_PORT'</span>, <span class="keyword">None</span>), <span class="keyword">help</span>=<span class="string">'HPFeeds Port'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-hpfident'</span>, <span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;hpfeeds-ident&gt;'</span>, <span class="keyword">default</span>=os.environ.<span class="keyword">get</span>(<span class="string">'HPFEEDS_IDENT'</span>, <span class="keyword">None</span>), <span class="keyword">help</span>=<span class="string">'HPFeeds Username'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-hpfsecret'</span>, <span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;hpfeeds-secret&gt;'</span>, <span class="keyword">default</span>=os.environ.<span class="keyword">get</span>(<span class="string">'HPFEEDS_SECRET'</span>, <span class="keyword">None</span>), <span class="keyword">help</span>=<span class="string">'HPFeeds Secret'</span>)</span><br><span class="line">parser.add_argument(<span class="string">'-hpfchannelprefix'</span>, <span class="keyword">action</span>=<span class="string">'store'</span>, metavar=<span class="string">'&lt;hpfeeds-channel-prefix&gt;'</span>, <span class="keyword">default</span>=os.environ.<span class="keyword">get</span>(<span class="string">'HPFEEDS_CHANNELPREFIX'</span>, <span class="keyword">None</span>), <span class="keyword">help</span>=<span class="string">'HPFeeds Channel Prefix'</span>)</span><br><span class="line"></span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line"># <span class="keyword">set</span> own logpath</span><br><span class="line">logpath=<span class="string">"./logs/"</span></span><br><span class="line"><span class="keyword">if</span> args.logpath:</span><br><span class="line">    logpath=args.logpath</span><br><span class="line"></span><br><span class="line"># <span class="keyword">set</span> the IP address <span class="keyword">variables</span></span><br><span class="line">bind_ip = args.<span class="keyword">i</span></span><br><span class="line">bind_port = <span class="built_in">int</span>(args.<span class="keyword">p</span>)</span><br><span class="line">srvname = args.s</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> connect_hpfeeds():</span><br><span class="line">    # <span class="keyword">set</span> hpfeeds related <span class="keyword">data</span></span><br><span class="line">    hpfeeds_server = args.hpfserver</span><br><span class="line">    hpfeeds_port = args.hpfport</span><br><span class="line">    hpfeeds_ident = args.hpfident</span><br><span class="line">    hpfeeds_secret = args.hpfsecret</span><br><span class="line">    hpfeeds_prefix = args.hpfchannelprefix</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> hpfeeds_server <span class="keyword">and</span> hpfeeds_port <span class="keyword">and</span> hpfeeds_ident <span class="keyword">and</span> hpfeeds_secret <span class="keyword">and</span> hpfeeds_prefix:</span><br><span class="line">        try:</span><br><span class="line">            hpc = hpfeeds.<span class="keyword">new</span>(hpfeeds_server, <span class="built_in">int</span>(hpfeeds_port), hpfeeds_ident, hpfeeds_secret)</span><br><span class="line">            <span class="keyword">return</span> hpc, hpfeeds_prefix</span><br><span class="line">        <span class="keyword">except</span> (hpfeeds.FeedException, socket.<span class="keyword">error</span>, hpfeeds.<span class="keyword">Disconnect</span>), <span class="keyword">e</span>:</span><br><span class="line">            print <span class="string">"hpfeeds connection not successful"</span></span><br><span class="line">            logger.warn(<span class="string">'Exception while connecting: &#123;0&#125;'</span>.<span class="keyword">format</span>(<span class="keyword">e</span>))</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">False</span>, <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line"></span><br><span class="line">    banner = (<span class="string">'''</span><br><span class="line">    ****************************************************************</span><br><span class="line">    \tMailoney - A Simple SMTP Honeypot - Version: &#123;&#125;</span><br><span class="line">    ****************************************************************</span><br><span class="line">    '''</span>.<span class="keyword">format</span>(__version__))</span><br><span class="line">    print banner</span><br><span class="line"></span><br><span class="line">    # <span class="keyword">create</span> <span class="keyword">log</span> <span class="keyword">directory</span> (thanks @Bifrozt_Dev)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.<span class="keyword">path</span>.isdir(logpath):</span><br><span class="line">            os.mkdir(logpath)</span><br><span class="line"></span><br><span class="line">    # <span class="keyword">call</span> <span class="keyword">server</span> <span class="keyword">type</span> <span class="keyword">module</span>, based <span class="keyword">on</span> parsed arguments</span><br><span class="line">    <span class="keyword">if</span> args.<span class="keyword">t</span> == <span class="string">'postfix_creds'</span>:</span><br><span class="line">        modules.postfix_creds.pfserver()</span><br><span class="line">    elif args.<span class="keyword">t</span> == <span class="string">'open_relay'</span>:</span><br><span class="line">        modules.open_relay.or_module()</span><br><span class="line">    elif args.<span class="keyword">t</span> == <span class="string">'schizo_open_relay'</span>:</span><br><span class="line">        modules.schizo_open_relay.<span class="keyword">module</span>()</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print <span class="string">'I don\'t know what this module is...Exiting...\r\n'</span></span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="etc_rdpy_local">etc_rdpy_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rdpy</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>RDPY 是基于 Twisted Python 实现的微软 RDP 远程桌面协议。</p>
+</blockquote>
+<p>Container 暴露端口:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">3389</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">3389</span></span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/tpot/7.png" alt="图片"></p>
+<p><img src="/images/tpot/8.png" alt="图片"></p>
+<hr>
+<h3 id="etc_spiderfoot_local">etc_spiderfoot_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spiderfoot</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>SpiderFoot是一种侦察工具，可自动查询100多个公共数据源（OSINT），以收集有关IP地址，域名，电子邮件地址，姓名等相关情报。使用Python编写的免费开源的网站信息收集类工具，并且支持跨平台运行，适用于Linux、*BSD和Windows系统。此外，它还为用户提供了一个易于使用的GUI界面。在功能方面SpiderFoot也为我们考虑的非常周全，通过SpiderFoot我们可以获取相关目标的各种信息，例如网站子域、电子邮件地址、web服务器版本等等。SpiderFoot简单的基于Web的界面，使你能够在安装后立即启动扫描 – 只需简单的设置扫描目标域名，并启用相应的扫描模块即可</p>
+<p>官网地址：<a href="http://www.spiderfoot.net/" target="_blank" rel="external">http://www.spiderfoot.net/</a><br>github项目地址：<a href="https://github.com/smicallef/spiderfoot" target="_blank" rel="external">https://github.com/smicallef/spiderfoot</a><br>介绍文章:<a href="https://www.freebuf.com/sectool/130007.html" target="_blank" rel="external">https://www.freebuf.com/sectool/130007.html</a></p>
+</blockquote>
+<p>Container 暴露端口:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">8080</span>/tcp  <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">64303</span></span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/tpot/9.png" alt="图片"></p>
+<hr>
+<h3 id="etc_ui-for-docker_local">etc_ui-for-docker_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ui-<span class="keyword">for</span>-docker</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>ui-for-docker,UI展示用,没啥好说的.</p>
+</blockquote>
+<p>Container 暴露端口:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">9000</span>/tcp  <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">64299</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="etc_vnclowpot_local">etc_vnclowpot_local</h3><p>该网络下包含以下一个容器:<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vnclowpot</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>这是一个vnc的蜜罐，当使用vnc客户端连接该端口，即可激活该蜜罐进行记录.</p>
+</blockquote>
+<p>Container 暴露端口:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">5900</span>/tcp  <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">5900</span></span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/tpot/10.png" alt="图片"><br><img src="/images/tpot/10-1.png" alt="图片"><br><img src="/images/tpot/10-2.png" alt="图片"></p>
+<hr>
+<p>———————-巧黑板,划重点!!!———————-</p>
+<hr>
+<h3 id="host(重点)">host(重点)</h3><p>该网络下包含以下四个重要容器:<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">netdata</span></span><br><span class="line">p0f</span><br><span class="line">honeytrap</span><br><span class="line">suricata</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>该部分的容器主要是通过监控宿主机的物理接口来获取数据,进行分析整理.</p>
+</blockquote>
+<p>Container 执行的命令:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/usr/</span>sbin<span class="regexp">/netdata -D -s /</span>host -i <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> -p <span class="number">64301</span></span><br><span class="line"><span class="regexp">/bin/</span>sh -c <span class="regexp">/bin/</span>bash -c <span class="string">"exec /opt/p0f/p0f -u p0f -j -o /var/log/p0f/p0f.json -i $(/sbin/ip address | grep '^2: ' | awk '&#123; print $2 &#125;' | tr -d [:punct:])"</span></span><br><span class="line"><span class="regexp">/opt/</span>honeytrap<span class="regexp">/sbin/</span>honeytrap -D -C <span class="regexp">/opt/</span>honeytrap<span class="regexp">/etc/</span>honeytrap/honeytrap.conf -t <span class="number">5</span> -u honeytrap -g honeytrap</span><br><span class="line"><span class="regexp">/bin/</span>sh -c update.sh &amp;&amp; suricata -v -F <span class="regexp">/etc/</span>suricata<span class="regexp">/capture-filter.bpf -i $(/</span>sbin/ip address | grep <span class="string">'^2: '</span> | awk <span class="string">'&#123; print $2 &#125;'</span> | tr -d [:<span class="string">punct:</span>])</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="p0f">p0f</h4><blockquote>
+<p>p0f是一款被动探测工具，能够通过捕获并分析目标主机发出的数据包来对主机上的操作系统进行鉴别，即使是在系统上装有性能良好的防火墙的情况下也没有问题。同时p0f在网络分析方面功能强大，可以用它来分析NAT、负载均衡、应用代理等。p0f是万能的被动操作系统指纹工具。p0f对于网络攻击非常有用，它利用SYN数据包实现操作系统被动检测技术，能够正确地识别目标系统类型。和其他扫描软件不同，它不向目标系统发送任何的数据，只是被动地接受来自目标系统的数据进行分析。因此，一个很大的优点是：几乎无法被检测到，而且p0f是专门系统识别工具，其指纹数据库非常详尽，更新也比较快，特别适合于安装在网关中。</p>
+</blockquote>
+<p>工作原理：当被动地拦截原始的TCP数据包中的数据，如可以访问数据包流经的网段，或数据包发往，或数据包来自你控制的系统；就能收集到很多有用的信息：TCP SYN 和SYN/ACK数据包就能反映TCP的链接参数，并且不同的TCP协议栈在协商这些参数的表现不同。</p>
+<p>P0f不增加任何直接或间接的网络负载，没有名称搜索、没有秘密探测、没有ARIN查询，什么都没有。某些高手还可以用P0f检测出主机上是否有防火墙存在、是否有NAT、是否存在负载平衡器等等！</p>
+<p>P0f是继Nmap和Xprobe2之后又一款远程操作系统被动判别工具。它支持：</p>
+<ol>
+<li>反连SYN 模式</li>
+<li>正连SYN+ACK 模式</li>
+<li>空连RST+ 模式</li>
+<li>碎片ACK 模式</li>
+</ol>
+<p>P0f比较有特色的是它还可以探测：</p>
+<ul>
+<li>A、是否运行于防火墙之后</li>
+<li>B、是否运行于NAT模式</li>
+<li>C、是否运行于负载均衡模式</li>
+<li>D、远程系统已启动时间</li>
+<li>E、远程系统的DSL和ISP信息等</li>
+</ul>
+<p>p0f 参数</p>
+<p>用法: p0f [ …选项… ] [ ‘过滤规则’ ]<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">网络接口选项:</span><br><span class="line"></span><br><span class="line">  -<span class="ruby">i iface  - 指定监听的网络接口</span><br><span class="line"></span>  -<span class="ruby">r file   - 读取由抓包工具抓到的网络数据包文件</span><br><span class="line"></span>  -<span class="ruby">p        - 设置 -i参数 指定的网卡 为混杂模式</span><br><span class="line"></span>  -<span class="ruby"><span class="constant">L</span>        - 列出所有可用接口</span></span><br></pre></td></tr></table></figure></p>
+<p>操作模式和输出设置:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">f file   - 指定指纹数据库 (p0f.fp) 路径，不指定则使用默认数据库。(默认：/etc/p0f/p0f.fp)</span><br><span class="line"></span>-<span class="ruby">o file   - 将信息写入指定的日志文件中。只有同一网卡的log文件才可以附加合并到本次监听中来。</span><br><span class="line"></span>-<span class="ruby">s name   - 回答 unix socket 的查询 <span class="constant">API</span></span><br><span class="line"></span>-<span class="ruby">u user   - 以指定用户身份运行程序，工作目录会切换到到当前用户根目录下；</span><br><span class="line"></span>-<span class="ruby">d        - 以后台进程方式运行p0f (requires -o <span class="keyword">or</span> -s)</span><br><span class="line"></span>-<span class="ruby">j        - <span class="constant">Log</span> <span class="keyword">in</span> <span class="constant">JSON</span> format.</span></span><br></pre></td></tr></table></figure>
+<p>性能相关的选项:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-S limit  - 设置API并发数，默认为<span class="number">20</span>，上限为<span class="number">100</span>；</span><br><span class="line">-t c,h    - 设置连接超时时间 (<span class="number">30</span>s,<span class="number">120</span>m)</span><br><span class="line">-m c,h    - 设置最大网络连接数(connect)和同时追踪的主机数(host)(默认值: c = <span class="number">1</span>,<span class="number">000</span>, h = <span class="number">10</span>,<span class="number">000</span>).</span><br></pre></td></tr></table></figure></p>
+<p>通过 man tcpdump 命令可以了解更过 过滤选项表达式。阻止p0f查看网络流量。<br>p0f -i eth0 –p    //监听网卡eth0，并开启混杂模式。这样会监听到每一个网络连接。<br>也可以直接在终端输入 p0f ，然后回车，进行监听，一旦收到报文就会显示相关信息，并且不断刷新。<br>示例：在终端输入 p0f 然后回车，就可进行监听。然后浏览器打开 www.baidu.com即可，，就可以监听与百度的网络连接。也可通过其他方式。</p>
+<p>tpot中的启动参数为：<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">CMD</span>        <span class="bash">/bin/sh -c /bin/bash -c <span class="string">"exec /opt/p0f/p0f -u p0f -j -o /var/log/p0f/p0f.json -i <span class="variable">$(/sbin/ip address | grep '^2: ' | awk '&#123; print $2 &#125;' | tr -d [:punct:])</span>"</span></span></span><br></pre></td></tr></table></figure></p>
+<p>日志存放位置：<br><code>/var/log/p0f/p0f.json</code><br>因为添加了-j参数，所以日志都json化了：</p>
+<p><img src="/images/tpot/12.png" alt="图片"></p>
+<p><img src="/images/tpot/12-1.png" alt="图片"></p>
+<p>基于以上策略，可以查看宿主机接口的所有连接数据：</p>
+<p><img src="/images/tpot/12-2.png" alt="图片"></p>
+<hr>
+<h4 id="Suricate">Suricate</h4><blockquote>
+<p>Suricate: 开源的网络安全威胁检测引擎。suricata具有IDS的功能外，还具有IPS功能，所谓的IPS即是Intrusion Prevention System（入侵防护系统），对不符合配置规则的报文进行直接阻断。suricata的阻断功能，是其本身所不具备的，只是通过和linux下通用的网络防火墙iptables/netfilter的联通来达到阻断网络的目的。</p>
+</blockquote>
+<p>suricata的IPS分为两种：</p>
+<p>1）drop：<br>包含签名的数据包立即被丢弃，不会再发送。 接收器不会收到导致超时的消息。 流的所有后续数据包都被丢弃。（实际测试http，用浏览器仍然可以访问，wget却不能访问）</p>
+<p>2）reject：<br>主动拒绝数据包，接收者和发送者都会收到一个拒绝数据包。 如果数据包涉及TCP，则它将成为重置数据包，否则将成为所有其他协议的ICMP错误数据包。<br>NFQ支持多个队列处理，您应该在iptables规则和suricata命令行选项中明确指定。 例如，您可以使用NFQ配置负载平衡，如下所示：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -A INPUT -j NFQUEUE --queue-balance <span class="number">0</span>:<span class="number">3</span></span><br><span class="line">suricata -c /etc/suricata/suricata<span class="class">.yaml</span> -<span class="tag">q</span> <span class="number">0</span> -<span class="tag">q</span> <span class="number">1</span> -<span class="tag">q</span> <span class="number">2</span> -<span class="tag">q</span> <span class="number">3</span></span><br></pre></td></tr></table></figure></p>
+<p>tpot中的启动参数为：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/<span class="keyword">sh</span> -c <span class="keyword">update</span>.<span class="keyword">sh</span> &amp;&amp; suricata -v -F /etc/suricata/<span class="keyword">capture</span>-filter.bpf -i $(/sbin/ip address | grep '^2: ' | awk '&#123; <span class="keyword">print</span> <span class="label">$2</span> &#125;' | tr -<span class="keyword">d</span> [:punct:])</span><br></pre></td></tr></table></figure>
+<p>日志位置:<br><code>data/suricata/log</code></p>
+<p><img src="/images/tpot/13.png" alt="图片"></p>
+<hr>
+<h4 id="honeytrap">honeytrap</h4><blockquote>
+<p>Honeytrap可观察针对TCP或UDP服务的攻击，作为一个守护程序模拟一些知名的服务，并能够分析攻击字符串，执行相应的下载文件指令，当不产生TCP或者UDP协议的时候Honeytrap捕获不到任何信息，但有攻击者试图使用一些安全工具进行扫描的时候，Honeytrap即可捕获到连接信息。</p>
+</blockquote>
+<p>tpot中的启动参数为：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/opt/</span>honeytrap<span class="regexp">/sbin/</span>honeytrap -D -C <span class="regexp">/opt/</span>honeytrap<span class="regexp">/etc/</span>honeytrap<span class="regexp">/honeytrap.conf -t 5 -u honeytrap -g honeytrap</span></span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/tpot/14.png" alt="图片"></p>
+<h4 id="netdata">netdata</h4><blockquote>
+<p>netdata是Linux系统实时性能监测工具，以web的可视化方式展示系统及应用程序的实时运行状态（包括cpu、内存、硬盘输入/输出、网络等linux性能的数据）</p>
+<p>Netdata文档地址：<a href="https://github.com/firehol/netdata/wiki" target="_blank" rel="external">https://github.com/firehol/netdata/wiki</a></p>
+</blockquote>
+<p>Netdata用可视化的手段，将被监测者最细微的细节，展现了出来。这样便可以清晰地了解linux系统和应用程序此时的状况。</p>
+<ul>
+<li>优美的界面：bootstrap框架下的控制界面</li>
+<li>自定义的控制界面：你可以使用简单的HTML代码去自定义控制界面(不需要使用javascript)</li>
+<li>极其的快速而高效：程序使用C进行编写(默认安装下，预计只有2%的单核CPU使用率和少许的内存使用率)</li>
+<li>零配置：你只需要去安装它，接着它就会自动地监测一切数据</li>
+<li>零依赖：它的静态网络文件和网络接口拥有自己的网络服务器</li>
+<li>可扩展：用它自身的插件API(可以使用许多方式来制作它的插件，从bash到node.js),你可以检测任何可以衡量的数据。</li>
+<li>可嵌入：它可以在任何Linux内核可以运行的地方运行</li>
+</ul>
+<p><img src="/images/tpot/16.png" alt="图片"></p>
+<hr>
+<p>结束….</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2018/11/12/tpot-docker/">T-Pot多蜜罐平台之使用更简单</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">哈哈髅</a></p>
+        <p><span>发布时间:</span>2018-11-12, 12:12:32</p>
+        <p><span>最后更新:</span>2018-11-12, 12:12:32</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2018/11/12/tpot-docker/" title="T-Pot多蜜罐平台之使用更简单">http://r00to1.github.io/2018/11/12/tpot-docker/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://r00to1.github.io/2018/11/12/tpot-docker/　　作者: 哈哈髅" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="#" title="CC BY-NC-SA 4.0 International" target = "_blank">"CC BY-NC-SA 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/03/10/burp-mp3/">
+                    Burp Suite-网易云音乐下载插件
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+<!--打赏代码-->
+
+	
+	  <!-- css -->
+	  <style type="text/css">
+		  .center {
+			  text-align: center;
+		  }
+		  .hidden {
+			  display: none;
+		  }
+		.donate_bar a.btn_donate{
+		  display: inline-block;
+		  width: 82px;
+		  height: 82px;
+		  background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+		  _background: url("http://7xsl28.com1.z0.glb.clouddn.com/btn_reward.gif") no-repeat;
+
+
+		  <!-- http://img.t.sinajs.cn/t5/style/images/apps_PRF/e_media/btn_reward.gif
+			   因为本 hexo 生成的博客所用的 theme 的 a:hover 带动画效果，
+			 为了在让打赏按钮显示效果正常 而 添加了以下几行 css，
+			 嵌入其它博客时不一定要它们。 -->
+		  -webkit-transition: background 0s;
+		  -moz-transition: background 0s;
+		  -o-transition: background 0s;
+		  -ms-transition: background 0s;
+		  transition: background 0s;
+		  <!-- /让打赏按钮的效果显示正常 而 添加的几行 css 到此结束 -->
+		}
+
+		.donate_bar a.btn_donate:hover{ background-position: 0px -82px;}
+		.donate_bar .donate_txt {
+		  display: block;
+		  color: #9d9d9d;
+		  font: 14px/2 "Microsoft Yahei";
+		}
+		.bold{ font-weight: bold; }
+	  </style>
+	  <!-- /css -->
+
+		<!-- Donate Module -->
+		<div id="donate_module">
+
+	  <!-- btn_donate & tips -->
+	  <div id="donate_board" class="donate_bar center">
+
+		<a id="btn_donate" class="btn_donate" target="_self" href="javascript:;" title="打赏一下"></a>
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+		  
+		
+	  </div>
+	  <!-- /btn_donate & tips -->
+
+	  <!-- donate guide -->
+		
+	  <div id="donate_guide" class="donate_bar center hidden">
+
+
+		<a href="/img/weixin.jpg" title="用微信扫一扫哦~" class="fancybox" rel="article0">
+		  <img src="/img/weixin.jpg" title="微信打赏 Colin" height="190px" width="auto"/>
+		</a>
+			
+			&nbsp;&nbsp;
+
+		<a href="/img/zhifubao.jpg" title="用支付宝扫一扫即可~" class="fancybox" rel="article0">    
+		  <img src="/img/zhifubao.jpg" title="支付宝打赏 Colin" height="190px" width="auto"/>
+		</a>
+
+		<span class="donate_txt">
+		  Enjoy it ? Donate me !  欣赏此文？求鼓励，求支持！
+		</span>
+
+	  </div>
+	  <!-- /donate guide -->
+
+	  <!-- donate script -->
+	  <script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function() {
+		  $('#donate_board').addClass('hidden');
+		  $('#donate_guide').removeClass('hidden');
+		}
+
+		function donate_on_web(){
+		  $('#donate').submit();
+			}
+
+		var original_window_onload = window.onload;
+			window.onload = function () {
+				if (original_window_onload) {
+					original_window_onload();
+				}
+				document.getElementById('donate_board_wdg').className = 'hidden';
+		}
+	  </script>
+	  <!-- /donate script -->
+	</div>
+	<!-- /Donate Module -->
+	   
+	   
+	   
+
+	  
+<!--结束打赏-->
+
+	  
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#介绍"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">2.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#蜜罐类型"><span class="toc-number">3.</span> <span class="toc-text">蜜罐类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tpot架构"><span class="toc-number">4.</span> <span class="toc-text">Tpot架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Container"><span class="toc-number">5.</span> <span class="toc-text">Container</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_default"><span class="toc-number">5.1.</span> <span class="toc-text">etc_default</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ELK+Elasticsearch-head_service"><span class="toc-number">5.1.1.</span> <span class="toc-text">ELK+Elasticsearch-head service</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_cowrie_local"><span class="toc-number">5.2.</span> <span class="toc-text">etc_cowrie_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_dionaea_local"><span class="toc-number">5.3.</span> <span class="toc-text">etc_dionaea_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_elasticpot_local"><span class="toc-number">5.4.</span> <span class="toc-text">etc_elasticpot_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_ewsposter_local"><span class="toc-number">5.5.</span> <span class="toc-text">etc_ewsposter_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_glastopf_local"><span class="toc-number">5.6.</span> <span class="toc-text">etc_glastopf_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_mailoney_local"><span class="toc-number">5.7.</span> <span class="toc-text">etc_mailoney_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_rdpy_local"><span class="toc-number">5.8.</span> <span class="toc-text">etc_rdpy_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_spiderfoot_local"><span class="toc-number">5.9.</span> <span class="toc-text">etc_spiderfoot_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_ui-for-docker_local"><span class="toc-number">5.10.</span> <span class="toc-text">etc_ui-for-docker_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etc_vnclowpot_local"><span class="toc-number">5.11.</span> <span class="toc-text">etc_vnclowpot_local</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#host(重点)"><span class="toc-number">5.12.</span> <span class="toc-text">host(重点)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#p0f"><span class="toc-number">5.12.1.</span> <span class="toc-text">p0f</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Suricate"><span class="toc-number">5.12.2.</span> <span class="toc-text">Suricate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#honeytrap"><span class="toc-number">5.12.3.</span> <span class="toc-text">honeytrap</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#netdata"><span class="toc-number">5.12.4.</span> <span class="toc-text">netdata</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"T-Pot多蜜罐平台之使用更简单　| HawSkull's Blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="2018/11/12/tpot-docker/" data-title="T-Pot多蜜罐平台之使用更简单" data-url="http://r00to1.github.io/2018/11/12/tpot-docker/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"r00to1"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/03/10/burp-mp3/" title="下一篇: Burp Suite-网易云音乐下载插件">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/11/12/tpot-docker/">T-Pot多蜜罐平台之使用更简单</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/burp-mp3/">Burp Suite-网易云音乐下载插件</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/23/NSA-MS17-010/">NSA工具介绍 及 MS17-010漏洞利用工具实现Win 7和Win Server 2008系统入侵</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/10/scrapy/">scrapy学习记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/burp1712/">渗透测试套件BurpSuite Pro v1.7.12破解版下载</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/09/ossim_win_ossec_4771/">详解OSSIM-OSSEC WIN 4771 案例</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/11/ossim-add-assets/">OSSIM-添加资产</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/10/ossim-OTX-ACCOUNT/">OSSIM-OTX 账号申请流程</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/01/09/ossim_linux_agent/">OSSIM-HIDS for linux</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/12/06/mac GourdScan /">mac搭建GourdScan</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/19/Mac Apache、PHP、Mysql /">mac配置Apache、PHP、MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/02/09/burp-sqlmap-tools/">渗透测试套件BurpSuite 之 sqlmap快速执行脚本</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/30/1_Git/">1-Git之快速指南</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/29/2_Git/">2_Git之创建代码仓库</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/28/3_Git/">3_Git之保存你的更改</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/27/4_Git/">4_Git之检查仓库状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/26/5_Git/">5_Git之图解Git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/25/6_Git/">6_Git之代码合并：Merge、Rebase的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/24/7_Git/">7_Git之代码回滚：Reset、Checkout、Revert的选择</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/23/8_Git/">8_Git之Git-log高级用法</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/22/9_Git/">9_Git之Git钩子：自定义你的工作流</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/10_Git/">10_Git之Git提交引用和引用日志</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/11/19/Mongo-x/">Mongo-x</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/10/19/hexo安装/">Hexo安装</a></li><li class="post-list-item"><a class="post-list-link" href="/2011/05/11/Markdown/">初识Markdown</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+	
+	
+	
+	
+
+
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2012-2018 哈哈髅
+            </div>
+			
+            <div class="footer-right">
+                <a href="#" title="A fast, simple &amp; powerful blog framework">Hexo</a>  Theme <a href="#" target="_blank" title="Another simple and elegant theme for Hexo  v3.5">Yelee</a> by NULL <i class="fa fa-heart animated infinite pulse">
+				<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261128962'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261128962%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>	
+				</i>
+            </div>
+			
+        </div>
+		
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="Site Visitors"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="Page Hits"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+	
+	
+	
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </div>
+</body>
+</html>
